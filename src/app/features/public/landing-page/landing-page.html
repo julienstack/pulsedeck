@@ -1,0 +1,40 @@
+<div class="min-h-screen bg-[var(--bg-color)] text-white flex flex-col items-center justify-center p-4">
+    <div class="max-w-4xl text-center">
+        <h1 class="text-6xl font-extrabold mb-6 tracking-tight">
+            Manage your <span class="text-[var(--primary-color)]">Hustle</span>
+        </h1>
+        <p class="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
+            Das moderne Dashboard für Vereine und Parteien. Organisiere Mitglieder, Termine und Wissen an einem Ort.
+        </p>
+
+        <div class="flex gap-4 justify-center">
+            <a routerLink="/dashboard"
+                class="px-8 py-4 bg-[var(--primary-color)] hover:bg-red-700 text-white rounded-lg font-bold text-lg transition-colors cursor-pointer shadow-lg shadow-red-900/20">
+                Dashboard öffnen
+            </a>
+            <button
+                class="px-8 py-4 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-bold text-lg transition-colors cursor-pointer border border-gray-700">
+                Mehr erfahren
+            </button>
+        </div>
+    </div>
+
+    <!-- Feature Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-24 max-w-6xl w-full px-4">
+        <div class="p-6 bg-gray-900/50 rounded-xl border border-gray-800 text-center">
+            <i class="pi pi-users text-4xl text-[var(--primary-color)] mb-4"></i>
+            <h3 class="text-xl font-bold mb-2">Mitglieder</h3>
+            <p class="text-gray-500">Verwalte deine Community effizient und einfach.</p>
+        </div>
+        <div class="p-6 bg-gray-900/50 rounded-xl border border-gray-800 text-center">
+            <i class="pi pi-calendar text-4xl text-[var(--primary-color)] mb-4"></i>
+            <h3 class="text-xl font-bold mb-2">Termine</h3>
+            <p class="text-gray-500">Alle Events und Sitzungen im Blick behalten.</p>
+        </div>
+        <div class="p-6 bg-gray-900/50 rounded-xl border border-gray-800 text-center">
+            <i class="pi pi-shield text-4xl text-[var(--primary-color)] mb-4"></i>
+            <h3 class="text-xl font-bold mb-2">Sicher</h3>
+            <p class="text-gray-500">Datenschutzkonform mit Supabase Integration.</p>
+        </div>
+    </div>
+</div>

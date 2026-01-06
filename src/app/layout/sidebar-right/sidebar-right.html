@@ -1,0 +1,39 @@
+<div class="flex flex-col gap-6 h-full">
+    <div>
+        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+            <i class="pi pi-calendar text-[var(--primary-color)]"></i>
+            Kalender
+        </h3>
+        <!-- PrimeNG Calendar Inline -->
+        <div class="calendar-wrapper bg-gray-800 rounded-lg p-2 shadow-lg border border-gray-700">
+            <p-datepicker [(ngModel)]="date" [inline]="true" [showWeek]="true"
+                styleClass="w-full border-none bg-transparent" panelStyleClass="bg-transparent border-none w-full">
+            </p-datepicker>
+        </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto">
+        <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Nächste Termine</h3>
+
+        <div class="space-y-3">
+            <div class="bg-gray-800/50 p-3 rounded-l-md border-l-4 border-[var(--primary-color)]">
+                <div class="flex justify-between items-start">
+                    <span class="font-bold text-white">Vorstandssitzung</span>
+                    <span class="text-xs text-gray-400 bg-gray-900 px-1 py-0.5 rounded">Heute</span>
+                </div>
+                <div class="text-sm text-gray-400 mt-1 flex items-center gap-1">
+                    <i class="pi pi-clock text-[10px]"></i> 19:00 Uhr
+                </div>
+            </div>
+
+            <div class="bg-gray-800/50 p-3 rounded-l-md border-l-4 border-gray-600 opacity-75">
+                <div class="flex justify-between items-start">
+                    <span class="font-bold text-white">Mitgliederversammlung</span>
+                </div>
+                <div class="text-sm text-gray-400 mt-1 flex items-center gap-1">
+                    <i class="pi pi-calendar text-[10px]"></i> 24. Okt
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
