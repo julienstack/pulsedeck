@@ -1,59 +1,64 @@
-# Dashboard
+# Hustle Hub Dashboard
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.4.
+Dieses Projekt ist ein modernes Dashboard für Vereine und Parteien, entwickelt mit [Angular](https://github.com/angular/angular-cli), [Tailwind CSS](https://tailwindcss.com), [PrimeNG](https://primeng.org) und [Supabase](https://supabase.com).
 
-## Development server
+## Funktionen
 
-To start a local development server, run:
+*   **Dreispaltiges Layout**: Navigationsleiste links, Hauptinhalt in der Mitte, Kalender und Widgets rechts.
+*   **Mitgliederbereich**: Übersicht für Mitglieder (in Entwicklung).
+*   **Öffentlicher Bereich**: Landingpage mit Informationen.
+*   **Anpassbares Design**: Dark Mode mit konfigurierbaren Akzentfarben (Standard: Rot).
+*   **Supabase Integration**: Vorbereitet für Authentifizierung und Datenbankanbindung.
+
+## Voraussetzungen
+
+*   Node.js (Version 18 oder höher empfohlen)
+*   npm
+
+## Installation & Start
+
+1.  Abhängigkeiten installieren:
+    ```bash
+    npm install
+    ```
+
+2.  Entwicklungsserver starten:
+    ```bash
+    npm start
+    # oder
+    ng serve
+    ```
+
+3.  Öffne `http://localhost:4200/` in deinem Browser.
+
+## Build für Produktion
+
+Um das Projekt für die Produktion zu bauen:
 
 ```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
+npm run build
+# oder
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Die kompilierten Dateien befinden sich dann im Ordner `dist/`.
 
-## Running unit tests
+## Konfiguration
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+### Supabase
+Trage deine Supabase-URL und den API-Key in die Datei `src/app/shared/services/supabase.ts` (oder später in die `environment`-Dateien) ein.
 
-```bash
-ng test
+### Design
+Die Farben können in `src/styles.css` über CSS-Variablen angepasst werden:
+```css
+:root {
+    --primary-color: #e11d48; /* Beispiel: Rot */
+}
 ```
 
-## Running end-to-end tests
+## Projektstruktur
 
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+*   `src/app/layout`: Hauptlayout-Komponenten (Sidebar Links/Rechts).
+*   `src/app/features/public`: Öffentliche Seiten (Landingpage).
+*   `src/app/features/dashboard`: Der geschützte Mitgliederbereich.
+*   `src/app/shared`: Gemeinsam genutzte Services und Komponenten.
