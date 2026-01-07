@@ -1,86 +1,83 @@
 <div class="flex flex-col gap-6 h-full">
-    <!-- Calendar Section -->
-    <div>
-        <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-            <i class="pi pi-calendar text-red-500"></i>
-            Kalender
-        </h3>
-        <div class="bg-gray-800/40 rounded-xl p-3">
-            <p-datepicker [(ngModel)]="date" [inline]="true" [showWeek]="true" styleClass="sidebar-calendar">
-            </p-datepicker>
-        </div>
-    </div>
 
     <!-- Upcoming Events -->
-    <div class="flex-1 overflow-y-auto">
-        <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
+    <div>
+        <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <i class="pi pi-calendar text-[var(--primary-color)]"></i>
             Nächste Termine
         </h3>
 
         <div class="space-y-2">
-            <!-- Today Event -->
-            <div class="bg-gray-800/40 rounded-lg p-3 hover:bg-gray-800/60 transition-colors cursor-pointer group">
+            @for (event of upcomingEvents; track event.title) {
+            <div
+                class="bg-gray-800/40 rounded-lg p-3 hover:bg-gray-800/60 transition-colors cursor-pointer group border border-transparent hover:border-gray-700">
                 <div class="flex items-start gap-3">
-                    <div class="w-8 h-8 bg-red-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <i class="pi pi-users text-red-400 text-sm"></i>
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                        [class]="'bg-' + event.color + '-500/20'">
+                        <i class="pi {{event.icon}} text-sm" [class]="'text-' + event.color + '-400'"></i>
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between mb-1">
                             <span
-                                class="font-semibold text-white text-sm group-hover:text-red-400 transition-colors">Vorstandssitzung</span>
+                                class="font-semibold text-white text-sm group-hover:text-[var(--primary-color)] transition-colors truncate block">
+                                {{ event.title }}
+                            </span>
+                            @if(event.date === 'Heute') {
                             <span
-                                class="text-[10px] text-red-400 bg-red-500/20 px-1.5 py-0.5 rounded font-medium">Heute</span>
+                                class="text-[10px] text-red-400 bg-red-500/20 px-1.5 py-0.5 rounded font-medium ml-2 flex-shrink-0">Heute</span>
+                            }
                         </div>
                         <div class="text-xs text-gray-500 flex items-center gap-1">
                             <i class="pi pi-clock text-[10px]"></i>
-                            19:00 Uhr
+                            <span>{{ event.date !== 'Heute' ? event.date + ', ' : '' }}{{ event.time }}</span>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Future Event -->
-            <div class="bg-gray-800/40 rounded-lg p-3 hover:bg-gray-800/60 transition-colors cursor-pointer group">
-                <div class="flex items-start gap-3">
-                    <div class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <i class="pi pi-star text-blue-400 text-sm"></i>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between mb-1">
-                            <span
-                                class="font-semibold text-white text-sm group-hover:text-blue-400 transition-colors">Mitgliederversammlung</span>
-                        </div>
-                        <div class="text-xs text-gray-500 flex items-center gap-1">
-                            <i class="pi pi-calendar text-[10px]"></i>
-                            24. Okt, 18:00 Uhr
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Another Event -->
-            <div class="bg-gray-800/40 rounded-lg p-3 hover:bg-gray-800/60 transition-colors cursor-pointer group">
-                <div class="flex items-start gap-3">
-                    <div class="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <i class="pi pi-gift text-green-400 text-sm"></i>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between mb-1">
-                            <span
-                                class="font-semibold text-white text-sm group-hover:text-green-400 transition-colors">Sommerfest</span>
-                        </div>
-                        <div class="text-xs text-gray-500 flex items-center gap-1">
-                            <i class="pi pi-calendar text-[10px]"></i>
-                            15. Jul, 14:00 Uhr
-                        </div>
-                    </div>
-                </div>
-            </div>
+            }
         </div>
 
         <a routerLink="/dashboard/calendar"
-            class="block mt-4 text-center text-sm text-gray-400 hover:text-white transition-colors">
-            Alle Termine →
+            class="block mt-3 text-right text-xs text-gray-400 hover:text-white transition-colors">
+            Alle Termine anzeigen <i class="pi pi-arrow-right text-[10px] ml-1"></i>
         </a>
+    </div>
+
+    <div class="w-full h-px bg-gray-800"></div>
+
+    <!-- My Tasks / Quick Todos -->
+    <div class="flex-1 flex flex-col min-h-0">
+        <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <i class="pi pi-check-circle text-green-500"></i>
+            Meine Aufgaben
+        </h3>
+
+        <div class="space-y-2 overflow-y-auto pr-1">
+            @for (task of tasks; track task.id) {
+            <div (click)="toggleTask(task)"
+                class="bg-gray-800/40 rounded-lg p-3 hover:bg-gray-800/60 transition-colors cursor-pointer border border-transparent hover:border-gray-700 flex items-center gap-3 group">
+
+                <div class="w-5 h-5 rounded border border-gray-600 flex items-center justify-center flex-shrink-0 transition-colors"
+                    [class.bg-green-500]="task.done" [class.border-green-500]="task.done"
+                    [class.group-hover:border-gray-500]="!task.done">
+                    @if(task.done) {
+                    <i class="pi pi-check text-xs text-black font-bold"></i>
+                    }
+                </div>
+
+                <span class="text-sm text-gray-300 group-hover:text-white transition-colors"
+                    [class.line-through]="task.done" [class.text-gray-500]="task.done">
+                    {{ task.title }}
+                </span>
+            </div>
+            }
+
+            <!-- Add Task Button Placeholder -->
+            <button
+                class="w-full py-2 border border-dashed border-gray-700 rounded-lg text-gray-500 hover:text-gray-300 hover:border-gray-500 hover:bg-gray-800/30 transition-all text-xs flex items-center justify-center gap-2 group">
+                <i class="pi pi-plus group-hover:text-[var(--primary-color)]"></i>
+                Aufgabe hinzufügen
+            </button>
+        </div>
     </div>
 </div>

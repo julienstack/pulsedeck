@@ -1,0 +1,72 @@
+<div class="p-6">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2">Termine</h1>
+        <p class="text-gray-400">Deine anstehenden Termine und Events.</p>
+    </div>
+
+    <!-- Filter/Tabs (Optional idea, but let's stick to a single list first as requested) -->
+
+    <div class="space-y-4">
+        @for (event of sortedEvents; track event.id) {
+        <div
+            class="bg-gray-800/40 rounded-xl p-4 border border-gray-700/50 hover:border-[var(--primary-color)] transition-all cursor-pointer group">
+            <div class="flex flex-col md:flex-row md:items-center gap-4">
+
+                <!-- Date Box -->
+                <div
+                    class="flex-shrink-0 flex md:flex-col items-center justify-center w-full md:w-20 md:h-20 bg-gray-900/50 rounded-lg border border-gray-700 p-2 gap-2 md:gap-0">
+                    <span class="text-sm font-medium text-gray-400 uppercase">{{ event.date | date:'MMM' }}</span>
+                    <span class="text-2xl font-bold text-white">{{ event.date | date:'dd' }}</span>
+                    <span class="text-xs text-gray-500 md:hidden">- {{ event.date | date:'EEEE' }}</span>
+                </div>
+
+                <!-- Content -->
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between gap-4 mb-2">
+                        <div>
+                            <h3
+                                class="text-lg font-bold text-white group-hover:text-[var(--primary-color)] transition-colors">
+                                {{ event.title }}
+                            </h3>
+                            <div class="flex items-center gap-2 text-sm text-gray-400 mt-1">
+                                <i class="pi pi-clock text-[var(--primary-color)]"></i>
+                                <span>{{ event.startTime }}</span>
+                                @if(event.endTime) {
+                                <span>- {{ event.endTime }}</span>
+                                }
+                                <span class="mx-1">•</span>
+                                <i class="pi pi-map-marker text-[var(--primary-color)]"></i>
+                                <span>{{ event.location }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Chips/Badges -->
+                        <div class="flex flex-col items-end gap-2">
+                            @if (event.type === 'general') {
+                            <span
+                                class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-semibold border border-blue-500/30">
+                                Allgemein
+                            </span>
+                            } @else if (event.type === 'personal') {
+                            <span
+                                class="px-2 py-1 rounded bg-purple-500/20 text-purple-400 text-xs font-semibold border border-purple-500/30">
+                                Persönlich
+                            </span>
+                            } @else if (event.type === 'ag') {
+                            <span
+                                class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-400 text-xs font-semibold border border-emerald-500/30">
+                                {{ event.agName || 'AG' }}
+                            </span>
+                            }
+                        </div>
+                    </div>
+
+                    @if (event.description) {
+                    <p class="text-sm text-gray-400 line-clamp-2">{{ event.description }}</p>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</div>

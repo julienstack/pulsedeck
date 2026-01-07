@@ -1,0 +1,102 @@
+:host {
+    --p-accordion-panel-border-width: 0;
+    --p-accordion-header-border-width: 0;
+    --p-accordion-content-border-width: 0;
+    --p-accordion-header-padding: 1.25rem;
+    --p-accordion-content-padding: 0 1.25rem 1.25rem 1.25rem;
+    --p-accordion-header-background: rgb(31 41 55 / 0.4);
+    --p-accordion-header-hover-background: rgb(31 41 55 / 0.6);
+    --p-accordion-header-active-background: rgb(31 41 55 / 0.6);
+    --p-accordion-content-background: rgb(31 41 55 / 0.2);
+    --p-accordion-header-border-radius: 0.75rem;
+}
+
+/* Global accordion reset for this component */
+:host ::ng-deep .ag-list {
+    background: transparent !important;
+    border: none !important;
+}
+
+:host ::ng-deep .ag-list .p-accordionpanel {
+    background: rgba(31, 41, 55, 0.3) !important;
+    border: 1px solid transparent !important;
+    border-radius: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+    box-shadow: none !important;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+/* Specific targeting for the first element which often has a top border in themes */
+:host ::ng-deep .ag-list .p-accordionpanel:first-child {
+    border-top: 1px solid transparent !important;
+}
+
+/* Target the specific problematic selector identified by user */
+:host ::ng-deep .ag-list .p-accordionpanel:first-child>.p-accordionheader {
+    border-width: 0 !important;
+    border-top: none !important;
+}
+
+/* Header styling */
+:host ::ng-deep .ag-list .p-accordionheader {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+:host ::ng-deep .ag-list .p-accordionheader-action {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 1.25rem !important;
+    color: white !important;
+    font-weight: normal !important;
+}
+
+:host ::ng-deep .ag-list .p-accordionheader-action:focus {
+    box-shadow: none !important;
+}
+
+/* Content styling */
+:host ::ng-deep .ag-list .p-accordioncontent-content {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 1.25rem 1.25rem 1.25rem !important;
+    color: #9ca3af !important;
+}
+
+/* Toggle icon styling */
+:host ::ng-deep .ag-list .p-accordionheader-toggle-icon {
+    color: #9ca3af !important;
+    order: 1;
+    margin-left: auto;
+}
+
+/* Hover State */
+:host ::ng-deep .ag-list .p-accordionpanel:hover {
+    border-color: rgba(75, 85, 99, 0.5) !important;
+    background: rgba(31, 41, 55, 0.4) !important;
+}
+
+/* Active State */
+:host ::ng-deep .ag-list .p-accordionpanel.p-accordionpanel-active {
+    border-color: var(--primary-color) !important;
+    background: rgba(31, 41, 55, 0.5) !important;
+}
+
+/* Avatar Styling */
+:host ::ng-deep .p-avatar {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+:host ::ng-deep .p-accordion .p-avatar.p-avatar-lg {
+    width: 3.5rem !important;
+    height: 3.5rem !important;
+    border-radius: 50% !important;
+}
+
+:host ::ng-deep .p-accordion .p-avatar .p-avatar-text {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+}
