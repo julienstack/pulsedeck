@@ -15,6 +15,17 @@ COPY . .
 # Debug: List environment files to verify existence
 RUN ls -la src/environments
 
+# Accept build arguments for environment generation
+ARG SUPABASE_URL
+ARG SUPABASE_ANON_KEY
+
+# Set them as environment variables so the script can access them
+ENV SUPABASE_URL=$SUPABASE_URL
+ENV SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+
+# Generate environment files dynamically
+RUN node scripts/set-env.js
+
 # Build the application for production
 RUN npm run build -- --configuration=production
 
