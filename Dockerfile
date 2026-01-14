@@ -12,6 +12,9 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# Debug: List environment files to verify existence
+RUN ls -la src/environments
+
 # Build the application for production
 RUN npm run build -- --configuration=production
 
