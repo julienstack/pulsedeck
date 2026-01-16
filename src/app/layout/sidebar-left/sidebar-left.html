@@ -39,10 +39,10 @@
     <div class="mt-auto border-t border-gray-800 pt-3 space-y-2">
         @if (auth.isAdmin()) {
         <div class="space-y-1">
-            <a routerLink="/dashboard/members"
+            <a routerLink="/dashboard/members" [queryParams]="{addNew: 'true'}"
                 class="flex items-center justify-between px-3 py-2 bg-gray-800/50 rounded-lg border border-gray-700/50 hover:border-pink-500 transition-colors cursor-pointer text-sm">
-                <span class="text-gray-300">Mitglieder</span>
-                <i class="pi pi-cog text-pink-500 text-sm"></i>
+                <span class="text-gray-300">Mitglied hinzufügen</span>
+                <i class="pi pi-user-plus text-pink-500 text-sm"></i>
             </a>
             <a routerLink="/dashboard/issue-tracker"
                 class="flex items-center justify-between px-3 py-2 bg-gray-800/50 rounded-lg border border-gray-700/50 hover:border-amber-500 transition-colors cursor-pointer text-sm">

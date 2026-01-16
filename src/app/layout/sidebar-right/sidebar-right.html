@@ -42,6 +42,7 @@
         </a>
     </div>
 
+    @if(isLoggedIn()) {
     <div class="w-full h-px bg-gray-800"></div>
 
     <!-- My Tasks -->
@@ -52,7 +53,7 @@
         </h3>
 
         <div class="space-y-1.5 overflow-y-auto">
-            @for (task of tasks; track task.id) {
+            @for (task of tasks(); track task.id) {
             <div (click)="toggleTask(task)"
                 class="bg-gray-800/40 rounded-lg p-2 hover:bg-gray-800/60 transition-colors cursor-pointer border border-transparent hover:border-gray-700 flex items-center gap-2 group">
 
@@ -71,13 +72,37 @@
             </div>
             }
 
-            <!-- Add Task Button -->
-            <button
+            <!-- Add Task -->
+            @if (showAddInput()) {
+            <div class="bg-gray-800/60 rounded-lg p-2 border border-pink-500/50">
+                <div class="flex items-center gap-1.5">
+                    <input #newTaskInput type="text" [ngModel]="newTaskTitle()"
+                        (ngModelChange)="newTaskTitle.set($event)" (keydown)="onInputKeydown($event)"
+                        [disabled]="addingTask()" placeholder="Neue Aufgabe..."
+                        class="flex-1 bg-transparent text-white text-xs outline-none placeholder-gray-500" />
+                    <button (click)="submitTask()" [disabled]="addingTask() || !newTaskTitle().trim()"
+                        class="w-5 h-5 rounded flex items-center justify-center text-green-400 hover:bg-green-500/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                        @if (addingTask()) {
+                        <i class="pi pi-spin pi-spinner text-[10px]"></i>
+                        } @else {
+                        <i class="pi pi-check text-[10px]"></i>
+                        }
+                    </button>
+                    <button (click)="cancelAdd()" [disabled]="addingTask()"
+                        class="w-5 h-5 rounded flex items-center justify-center text-gray-400 hover:bg-gray-700 hover:text-white disabled:opacity-30 transition-colors">
+                        <i class="pi pi-times text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+            } @else {
+            <button (click)="openAddInput()"
                 class="w-full py-1.5 border border-dashed border-gray-700 rounded-lg text-gray-500 hover:text-gray-300 hover:border-gray-600 hover:bg-gray-800/30 transition-all text-[10px] flex items-center justify-center gap-1 group">
                 <i class="pi pi-plus group-hover:text-pink-500 text-[10px]"></i>
                 Aufgabe
             </button>
+            }
         </div>
     </div>
+    }
 
 </div>

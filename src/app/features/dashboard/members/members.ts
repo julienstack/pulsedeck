@@ -1,6 +1,14 @@
-import { Component, inject, OnInit, signal, computed, ViewChild } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  signal,
+  computed,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 // PrimeNG Imports
 import { Table, TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -57,6 +65,8 @@ export class MembersComponent implements OnInit {
   private membersService = inject(MembersService);
   private confirmationService = inject(ConfirmationService);
   private messageService = inject(MessageService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
   public auth = inject(AuthService);
 
   members = this.membersService.members;
@@ -116,6 +126,20 @@ export class MembersComponent implements OnInit {
 
   ngOnInit(): void {
     this.membersService.fetchMembers();
+
+    // Check for addNew query param to auto-open the modal
+    this.route.queryParams.subscribe(params => {
+      if (params['addNew'] === 'true') {
+        // Small delay to ensure component is ready
+        setTimeout(() => this.openNew(), 100);
+        // Remove the query param from URL
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: {},
+          replaceUrl: true,
+        });
+      }
+    });
   }
 
   getEmptyMember(): Partial<Member> {
