@@ -1,8 +1,11 @@
 # Nixpacks configuration for Coolify
-# Forces Node.js provider and ignores Supabase Edge Functions
+# Force Node.js provider - ignore Supabase Edge Functions
+
+# Force the Node provider explicitly
+providers = ["node"]
 
 [phases.setup]
-nixPkgs = ["nodejs_20", "npm"]
+nixPkgs = ["nodejs_20"]
 
 [phases.install]
 cmds = ["npm ci"]
