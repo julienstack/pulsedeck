@@ -122,12 +122,99 @@
 
             <!-- Actions -->
             <div class="flex justify-end gap-3 pt-4 border-t border-[var(--color-border)]">
-                <p-button label="Abbrechen" [text]="true" severity="secondary" routerLink="../dashboard"></p-button>
+                <p-button label="Abbrechen" [text]="true" severity="secondary" routerLink="./"></p-button>
                 <p-button type="submit" label="Speichern" icon="pi pi-check" [loading]="saving()"
                     [disabled]="saving()"></p-button>
             </div>
 
         </form>
+    </div>
+
+    <!-- Skills Section -->
+    <div class="bg-[var(--color-surface-raised)] rounded-xl border border-[var(--color-border)] p-6 mt-6">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h3 class="text-lg font-semibold text-[var(--color-text)]">
+                    Meine Fähigkeiten & Interessen
+                </h3>
+                <p class="text-sm text-[var(--color-text-muted)]">
+                    Teile mit, wobei du helfen kannst
+                </p>
+            </div>
+            @if (hasSkillChanges()) {
+            <p-button label="Speichern" icon="pi pi-check" [loading]="saving()" (onClick)="saveSkills()"></p-button>
+            }
+        </div>
+
+        <p-tabs value="ability">
+            <p-tablist>
+                <p-tab value="ability">
+                    <i class="pi pi-wrench mr-2"></i>
+                    Fähigkeiten
+                </p-tab>
+                <p-tab value="interest">
+                    <i class="pi pi-heart mr-2"></i>
+                    Interessen
+                </p-tab>
+                <p-tab value="availability">
+                    <i class="pi pi-clock mr-2"></i>
+                    Verfügbarkeit
+                </p-tab>
+            </p-tablist>
+
+            <p-tabpanels>
+                @for (cat of categories; track cat) {
+                <p-tabpanel [value]="cat">
+                    <div class="py-4">
+                        <p class="text-sm text-[var(--color-text-muted)] mb-4">
+                            {{ getCategoryDescription(cat) }}
+                        </p>
+
+                        <div class="flex flex-wrap gap-2">
+                            @for (skill of getSkillsByCategory(cat); track skill.id) {
+                            <button type="button" (click)="toggleSkill(skill.id)" class="px-4 py-2 rounded-full border-2 transition-all
+                                            hover:scale-105 cursor-pointer
+                                            flex items-center gap-2" [class.bg-linke]="isSkillSelected(skill.id)"
+                                [class.text-white]="isSkillSelected(skill.id)"
+                                [class.border-linke]="isSkillSelected(skill.id)"
+                                [class.bg-transparent]="!isSkillSelected(skill.id)"
+                                [class.text-[var(--color-text)]]="!isSkillSelected(skill.id)"
+                                [class.border-[var(--color-border)]]="!isSkillSelected(skill.id)">
+                                @if (skill.icon) {
+                                <i [class]="'pi ' + skill.icon"></i>
+                                }
+                                {{ skill.name }}
+                                @if (isSkillSelected(skill.id)) {
+                                <i class="pi pi-check text-sm"></i>
+                                }
+                            </button>
+                            } @empty {
+                            <p class="text-center text-[var(--color-text-muted)] py-4 w-full">
+                                Keine {{ skillService.getCategoryLabel(cat) }} verfügbar
+                            </p>
+                            }
+                        </div>
+                    </div>
+                </p-tabpanel>
+                }
+            </p-tabpanels>
+        </p-tabs>
+
+        <!-- Selected Skills Summary -->
+        @if (selectedSkillIds().length > 0) {
+        <p-divider></p-divider>
+        <div class="pt-2">
+            <h4 class="text-sm font-medium text-[var(--color-text-muted)] mb-3">
+                Meine Auswahl ({{ selectedSkillIds().length }})
+            </h4>
+            <div class="flex flex-wrap gap-2">
+                @for (skillId of selectedSkillIds(); track skillId) {
+                <p-chip [label]="getSkillName(skillId)" [removable]="true" (onRemove)="toggleSkill(skillId)"
+                    styleClass="bg-linke/20 text-linke"></p-chip>
+                }
+            </div>
+        </div>
+        }
     </div>
 
 </div>

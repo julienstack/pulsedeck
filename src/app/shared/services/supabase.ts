@@ -19,6 +19,7 @@ export class SupabaseService {
   private supabase: SupabaseClient;
   private _session = signal<Session | null>(null);
   private _user = signal<User | null>(null);
+  private _authReady = signal(false);
 
   constructor() {
     this.supabase = createClient(
@@ -29,12 +30,16 @@ export class SupabaseService {
     this.supabase.auth.getSession().then(({ data }) => {
       this._session.set(data.session);
       this._user.set(data.session?.user ?? null);
+      this._authReady.set(true);
     });
 
     this.supabase.auth.onAuthStateChange(
       (_event: AuthChangeEvent, session: Session | null) => {
         this._session.set(session);
         this._user.set(session?.user ?? null);
+        if (!this._authReady()) {
+          this._authReady.set(true);
+        }
       }
     );
   }
@@ -52,6 +57,11 @@ export class SupabaseService {
   /** Current user signal (readonly) */
   get user() {
     return this._user.asReadonly();
+  }
+
+  /** Auth initialization complete signal (readonly) */
+  get authReady() {
+    return this._authReady.asReadonly();
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

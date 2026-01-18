@@ -38,7 +38,7 @@ export const routes: Routes = [
     {
         path: 'erstellen',
         canActivate: [devPasswordGuard],
-        loadComponent: () => import('./features/organizations/create-organization.component').then(m => m.CreateOrganizationComponent)
+        loadComponent: () => import('./features/organizations/create-organization/create-organization.component').then(m => m.CreateOrganizationComponent)
     },
     {
         path: 'organisationen',
@@ -91,7 +91,8 @@ export const routes: Routes = [
                     { path: 'files', loadComponent: () => import('./features/dashboard/files/files.component').then(m => m.FilesComponent) },
                     { path: 'profile', loadComponent: () => import('./features/dashboard/profile/profile').then(m => m.ProfileComponent) },
                     { path: 'issue-tracker', canActivate: [issueTrackerGuard], loadComponent: () => import('./features/dashboard/issue-tracker/issue-tracker.component').then(m => m.IssueTrackerComponent) },
-                    { path: 'roadmap', loadComponent: () => import('./features/dashboard/roadmap/roadmap.component').then(m => m.RoadmapComponent) }
+                    { path: 'roadmap', loadComponent: () => import('./features/dashboard/roadmap/roadmap.component').then(m => m.RoadmapComponent) },
+                    { path: 'settings', canActivate: [adminGuard], loadComponent: () => import('./features/dashboard/settings/settings').then(m => m.SettingsComponent) }
                 ]
             }
         ]

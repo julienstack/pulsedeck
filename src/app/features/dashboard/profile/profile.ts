@@ -1,18 +1,23 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
+
+// PrimeNG
 import { ButtonModule } from 'primeng/button';
+import { ChipModule } from 'primeng/chip';
 import { InputTextModule } from 'primeng/inputtext';
-import { DatePickerModule } from 'primeng/datepicker';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { AvatarModule } from 'primeng/avatar';
 import { DividerModule } from 'primeng/divider';
+import { DatePickerModule } from 'primeng/datepicker';
+import { TabsModule } from 'primeng/tabs';
+
+// Services
 import { AuthService } from '../../../shared/services/auth.service';
 import { MembersService } from '../../../shared/services/members.service';
-import { OnboardingService } from '../../../shared/services/onboarding.service';
-import { Member } from '../../../shared/models/member.model';
+import { OrganizationService } from '../../../shared/services/organization.service';
+import { SkillService, Skill, SkillCategory } from '../../../shared/services/skill.service';
 
 @Component({
     selector: 'app-profile',
@@ -20,74 +25,92 @@ import { Member } from '../../../shared/models/member.model';
     imports: [
         CommonModule,
         FormsModule,
+        RouterModule,
         ButtonModule,
+        ChipModule,
         InputTextModule,
-        DatePickerModule,
         ToastModule,
-        AvatarModule,
         DividerModule,
+        DatePickerModule,
+        TabsModule,
     ],
     providers: [MessageService],
     templateUrl: './profile.html',
-    styleUrl: './profile.css',
+    styleUrls: ['./profile.css'],
 })
 export class ProfileComponent implements OnInit {
-    auth = inject(AuthService);
-    membersService = inject(MembersService);
-    messageService = inject(MessageService);
-    onboardingService = inject(OnboardingService);
-    router = inject(Router);
+    readonly auth = inject(AuthService);
+    private readonly members = inject(MembersService);
+    private readonly org = inject(OrganizationService);
+    readonly skillService = inject(SkillService);
+    private readonly messageService = inject(MessageService);
 
     saving = signal(false);
     birthdayDate: Date | null = null;
 
-    // Form fields
-    formData: Partial<Member> = {};
+    // Form data for profile editing
+    formData = {
+        phone: '',
+        street: '',
+        zip_code: '',
+        city: '',
+    };
 
-    ngOnInit(): void {
+    // Skills
+    selectedSkillIds = signal<string[]>([]);
+    originalSkillIds = signal<string[]>([]);
+    categories: SkillCategory[] = ['ability', 'interest', 'availability'];
+
+    hasSkillChanges = computed(() => {
+        const current = [...this.selectedSkillIds()].sort();
+        const original = [...this.originalSkillIds()].sort();
+        return JSON.stringify(current) !== JSON.stringify(original);
+    });
+
+    async ngOnInit(): Promise<void> {
         const member = this.auth.currentMember();
-        if (!member) {
-            this.router.navigate(['/dashboard']);
-            return;
-        }
+        if (member) {
+            // Load profile data
+            this.formData = {
+                phone: member.phone || '',
+                street: member.street || '',
+                zip_code: member.zip_code || '',
+                city: member.city || '',
+            };
 
-        // Copy member data to form
-        this.formData = { ...member };
-
-        // Parse birthday to Date object
-        if (member.birthday) {
-            this.birthdayDate = this.parseGermanDate(member.birthday);
-        }
-    }
-
-    /**
-     * Parse German date format (dd.mm.yyyy)
-     */
-    private parseGermanDate(dateStr: string): Date | null {
-        const parts = dateStr.split('.');
-        if (parts.length === 3) {
-            let year = parseInt(parts[2], 10);
-            if (year < 100) {
-                year += 1900;
-                if (year < 1950) year += 100;
+            if (member.birthday) {
+                this.birthdayDate = new Date(member.birthday);
             }
-            return new Date(
-                year,
-                parseInt(parts[1], 10) - 1,
-                parseInt(parts[0], 10)
-            );
+
+            // Load skills for organization
+            const orgId = this.org.currentOrganization()?.id;
+            if (orgId) {
+                await this.skillService.loadSkills(orgId);
+            }
+
+            // Load member's selected skills
+            if (member.id) {
+                const memberSkills =
+                    await this.skillService.getMemberSkillIds(member.id);
+                this.selectedSkillIds.set(memberSkills);
+                this.originalSkillIds.set([...memberSkills]);
+            }
         }
-        return null;
     }
 
-    /**
-     * Format Date to German format (dd.mm.yyyy)
-     */
-    private formatToGermanDate(date: Date): string {
-        const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}.${month}.${year}`;
+    getInitials(): string {
+        const name = this.auth.currentMember()?.name || '';
+        return name
+            .split(' ')
+            .map((n: string) => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2);
+    }
+
+    isProfileComplete(): boolean {
+        const m = this.auth.currentMember();
+        return !!(m?.phone && m?.street && m?.city && m?.birthday);
     }
 
     async saveProfile(): Promise<void> {
@@ -96,74 +119,96 @@ export class ProfileComponent implements OnInit {
 
         this.saving.set(true);
 
-        try {
-            // Convert birthday
-            if (this.birthdayDate) {
-                this.formData.birthday = this.formatToGermanDate(
-                    this.birthdayDate
-                );
-            }
+        const updates = {
+            ...this.formData,
+            birthday: this.birthdayDate
+                ? this.birthdayDate.toISOString().split('T')[0]
+                : undefined,
+        };
 
-            // Update member
-            await this.membersService.updateMember(member.id, {
-                street: this.formData.street,
-                zip_code: this.formData.zip_code,
-                city: this.formData.city,
-                phone: this.formData.phone,
-                birthday: this.formData.birthday,
-            });
+        const success = await this.members.updateMember(member.id, updates);
 
-            // Refresh current member in auth service
-            this.auth.currentMember.set({
-                ...member,
-                street: this.formData.street,
-                zip_code: this.formData.zip_code,
-                city: this.formData.city,
-                phone: this.formData.phone,
-                birthday: this.formData.birthday,
-            });
-
-            // Refresh onboarding progress
-            await this.onboardingService.fetchProgress();
-
+        if (success) {
             this.messageService.add({
                 severity: 'success',
                 summary: 'Gespeichert',
                 detail: 'Dein Profil wurde aktualisiert',
             });
-        } catch (e: any) {
+        } else {
             this.messageService.add({
                 severity: 'error',
                 summary: 'Fehler',
-                detail: e.message || 'Profil konnte nicht gespeichert werden',
+                detail: 'Speichern fehlgeschlagen',
             });
         }
 
         this.saving.set(false);
     }
 
-    /**
-     * Check if profile is complete
-     */
-    isProfileComplete(): boolean {
-        return !!(
-            this.formData.street &&
-            this.formData.city &&
-            this.formData.phone &&
-            this.formData.birthday
-        );
+    // =========================================================================
+    // SKILLS
+    // =========================================================================
+
+    getSkillsByCategory(category: SkillCategory): Skill[] {
+        return this.skillService.getSkillsByCategory(category);
     }
 
-    /**
-     * Get initials from name
-     */
-    getInitials(): string {
-        const name = this.auth.currentMember()?.name || '';
-        return name
-            .split(' ')
-            .map(n => n[0])
-            .join('')
-            .substring(0, 2)
-            .toUpperCase();
+    getCategoryDescription(category: SkillCategory): string {
+        const descriptions: Record<SkillCategory, string> = {
+            ability:
+                'Welche Fähigkeiten bringst du mit?',
+            interest:
+                'Für welche Themen interessierst du dich?',
+            availability:
+                'Wann und wie bist du verfügbar?',
+        };
+        return descriptions[category];
+    }
+
+    isSkillSelected(skillId: string): boolean {
+        return this.selectedSkillIds().includes(skillId);
+    }
+
+    toggleSkill(skillId: string): void {
+        const current = this.selectedSkillIds();
+        if (current.includes(skillId)) {
+            this.selectedSkillIds.set(current.filter((id) => id !== skillId));
+        } else {
+            this.selectedSkillIds.set([...current, skillId]);
+        }
+    }
+
+    getSkillName(skillId: string): string {
+        const skill = this.skillService.skills().find((s) => s.id === skillId);
+        return skill?.name || '';
+    }
+
+    async saveSkills(): Promise<void> {
+        const memberId = this.auth.currentMember()?.id;
+        if (!memberId) return;
+
+        this.saving.set(true);
+
+        const success = await this.skillService.updateMemberSkills(
+            memberId,
+            this.selectedSkillIds()
+        );
+
+        this.saving.set(false);
+
+        if (success) {
+            this.originalSkillIds.set([...this.selectedSkillIds()]);
+            this.messageService.add({
+                severity: 'success',
+                summary: 'Gespeichert',
+                detail: 'Deine Fähigkeiten wurden aktualisiert',
+            });
+        } else {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Fehler',
+                detail: 'Speichern fehlgeschlagen',
+            });
+        }
     }
 }

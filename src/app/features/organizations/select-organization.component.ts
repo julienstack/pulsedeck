@@ -124,12 +124,7 @@ export class SelectOrganizationComponent {
         const orgs = await this.orgService.getMyOrganizations(userId);
         this.organizations.set(orgs);
 
-        // If only one organization, go directly to it
-        if (orgs.length === 1) {
-            this.selectOrganization(orgs[0]);
-            return;
-        }
-
+        // Always show the selection page - don't auto-redirect
         this.loading.set(false);
     }
 

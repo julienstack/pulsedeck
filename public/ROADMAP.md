@@ -1,7 +1,7 @@
 # 🚀 Lexion Roadmap
 
-> **Letzte Aktualisierung:** 17. Januar 2026  
-> **Aktuelle Version:** Alpha 0.3.0
+> **Letzte Aktualisierung:** 18. Januar 2026  
+> **Aktuelle Version:** Alpha 0.7.0
 
 ---
 
@@ -11,40 +11,78 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 
 ---
 
-## 🎯 Aktuell in Arbeit
+## 🎯 Aktueller Fokus: Mobilisierung
 
-<!-- AI-TODO: Aktuelle Aufgaben hier -->
-
-*Aktuell keine laufenden Entwicklungen. Nächster Sprint wird bald gestartet!*
+*"Die Hürde von 'Ich lese nur mit' zu 'Ich mache mit' so niedrig wie möglich legen."*
 
 ---
 
-## 📅 Geplante Features
+## 🚧 Aktuell in Arbeit
 
-### Priorität: Hoch ⭐⭐⭐
+### 📋 Event-Helfer-Slots (Schichtplan)
+- [ ] Slot-Verwaltung bei Events (Aufbau, Theke, Einlass)
+- [ ] Helfer-Anmeldung pro Slot
+- [ ] Max-Kapazität pro Slot
+- [ ] Skill-Anforderungen pro Slot
 
-- [x] **Termin-Anmeldung** – Mitglieder können sich für Events an-/abmelden ✅
-- [x] **Dateiverwaltung** – Upload von Dokumenten mit Suche ✅
-- [x] **iCal-Export** – Kalender-Sync für externe Apps ✅
-- [x] **Dashboard-Statistiken** – Echte Zahlen statt Platzhalter ✅
+---
 
-### Priorität: Mittel ⭐⭐
+## 📅 Mobilisierungs-Features (Priorisiert)
 
-- [ ] **Kommentare bei Beiträgen** – Diskussionen im Feed
-- [ ] **Abstimmungen/Umfragen** – Einfache Polls für Mitglieder
-- [ ] **Aufgaben für AGs** – To-Do-Listen innerhalb einer AG
-- [ ] **Mitglieder-Tags** – Flexible Kennzeichnungen
+### Phase 1: Basis ⭐⭐⭐
 
-### Priorität: Niedrig ⭐
+| # | Feature | Status | Beschreibung |
+|---|---------|--------|--------------|
+| 1 | **Skill-Tagging** | ✅ Fertig | Mitglieder taggen ihre Fähigkeiten |
+| 2 | **Admin-Einstellungen** | ✅ Fertig | Zentraler Admin-Bereich für Skills, Newsletter, Org-Settings |
+| 3 | **Org erstellen** | ✅ Fertig | Eingeloggte User können neue Orgs erstellen |
+| 4 | **Event-Helfer-Slots** | 🚧 In Arbeit | Events mit Schichtplan |
+| 5 | **Admin-Filter** | ⏳ Geplant | Vorstand filtert nach Skills/Ort |
 
-- [ ] **Gamification** – Punkte/Badges für aktive Teilnahme
-- [ ] **PWA/Mobile Push** – Native App-Feeling
-- [ ] **Öffentliche Landingpage** – Infos für Externe
-- [ ] **Jahresberichte** – Automatische Statistiken
+### Phase 2: Engagement ⭐⭐
+
+| # | Feature | Status | Beschreibung |
+|---|---------|--------|--------------|
+| 6 | **Push-Notifications** | ⏳ Geplant | Zielgruppen-Push ("Hilfe morgen benötigt") |
+| 7 | **Mikro-Umfragen** | ⏳ Geplant | Schnelle 2-Klick Abstimmungen im Feed |
+| 8 | **Teilnehmerlisten** | ⏳ Geplant | Social Proof: "Max und Julia sind dabei" |
+| 9 | **One-Click Teilnahme** | ⏳ Geplant | "Ich bin dabei" Button ohne Formular |
+
+### Phase 3: Community ⭐
+
+| # | Feature | Status | Beschreibung |
+|---|---------|--------|--------------|
+| 10 | **Biete/Suche Brett** | ⏳ Geplant | Mitfahrgelegenheiten, Hilfsanfragen |
+| 11 | **Auto-Danke System** | ⏳ Geplant | Automatische Wertschätzung nach Events |
 
 ---
 
 ## ✅ Abgeschlossen (Patch Notes)
+
+### v0.7.0 – 18. Januar 2026
+
+**🏷️ Skill-Tagging & Admin-Bereich**
+- [x] Skills-Datenbank (`skills`, `member_skills` Tabellen)
+- [x] Profil-Editor mit Skill-Auswahl (Chips/Tags)
+- [x] Kategorien: Fähigkeiten, Interessen, Verfügbarkeit
+- [x] Zentraler Admin-Bereich `/dashboard/settings`
+- [x] Skills verwalten (CRUD) im Admin
+- [x] Newsletter-Konfiguration (SMTP, Design, Zeitplan)
+- [x] Organisations-Einstellungen (Name, Logo, Farbe)
+- [x] Organisations-Erstellung für eingeloggte User
+
+---
+
+### v0.6.0 – 18. Januar 2026
+
+**🔐 Multi-Org Auth System**
+- [x] Globaler Email-Lookup über alle Organisationen
+- [x] Edge Function `send-invitation` für Login-Flow
+- [x] User können mehreren Organisationen angehören
+- [x] Org-Switcher in Sidebar
+- [x] Automatische Dashboard-Weiterleitung für eingeloggte User
+
+---
 
 ### v0.5.0 – 17. Januar 2026
 
@@ -54,19 +92,16 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 - [x] Mitglieder-Zähler (Gesamt + Aktiv)
 - [x] Termine-Zähler (Anstehend + Diesen Monat)
 - [x] Wiki-Artikel, Dateien und News-Zähler
-- [x] AG-Anzahl als Zusatzinfo
 
 ---
 
 ### v0.4.0 – 17. Januar 2026
 
 **📁 Dateiverwaltung**
-- [x] files Tabelle mit RLS-Policies für Berechtigungen
+- [x] files Tabelle mit RLS-Policies
 - [x] FileService für Upload, Download, Suche
-- [x] Files-Komponente mit Grid-Ansicht
-- [x] Ordner-Navigation (Breadcrumbs)
-- [x] Sichtbarkeitsoptionen (Mitglieder/Vorstand/Admin/AG)
-- [x] Sidebar-Link "Dateien"
+- [x] Ordner-Navigation mit Breadcrumbs
+- [x] Sichtbarkeitsoptionen
 
 ---
 
@@ -74,128 +109,96 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 
 **📤 iCal-Export**
 - [x] Edge Function für .ics-Generierung
-- [x] Download-Button im Kalender
-- [x] Abo-Link zum Kopieren (für Kalender-Apps)
-- [x] Optional: AG-spezifische Kalender
+- [x] Download-Button & Abo-Link
 
 ---
 
 ### v0.3.0 – 17. Januar 2026
 
 **📅 Termin-Anmeldung**
-- [x] event_registrations Tabelle mit RLS-Policies
-- [x] EventRegistrationService für An-/Abmeldung
-- [x] Anmelde-Button bei jedem Termin im Kalender
-- [x] Teilnehmerliste mit Dialog-Ansicht
-- [x] Status-Anzeige (Zugesagt/Vielleicht)
-
----
-
-### v0.2.1 – 17. Januar 2026
-
-**📧 E-Mail-Templates**
-- [x] Einfaches, zugängliches Newsletter-Design (Link-Liste)
-- [x] Konfigurierbar: Logo-URL, Footer-Text, Primärfarbe
-- [x] Datenbank-Migration für Template-Einstellungen
-- [x] UI im Feed-Bereich für E-Mail-Design
-
-**🗺️ Roadmap-Seite**
-- [x] ROADMAP.md als zentrale Planungsdatei
-- [x] Roadmap-Komponente mit Markdown-Rendering
-- [x] Erreichbar über Alpha-Badge (Map-Icon)
+- [x] event_registrations mit RLS
+- [x] An-/Abmeldung mit Status
 
 ---
 
 ### v0.2.0 – 17. Januar 2026
 
 **🔐 Berechtigungssystem**
-- [x] Globale Berechtigungen für Mitglieder (feed:create, wiki:edit, etc.)
-- [x] AG-spezifische Rollen (Mitglied, Admin, Leitung)
-- [x] PermissionsService für reaktive Berechtigungsprüfung
-- [x] Mitglieder-Dialog mit Rollen- und Berechtigungsverwaltung
-- [x] AG-Mitglieder-Verwaltungsdialog
-- [x] SQL-Migration für permissions und ag_memberships
-
-**🎨 UI-Verbesserungen**
-- [x] Feed: Buttons nur für berechtigte Nutzer sichtbar
-- [x] Wiki: Edit-Button basierend auf Berechtigung
-- [x] Kalender: Event-Erstellung berechtigungsgesteuert
-- [x] AG-Seite: Rollen-Badge und Mitgliederverwaltung
+- [x] Globale + AG-spezifische Rollen
+- [x] PermissionsService
 
 ---
 
 ### v0.1.0 – 14. Januar 2026
 
 **🎉 Erster Alpha-Release**
-- [x] Dashboard mit Navigation
-- [x] Mitgliederverwaltung
-- [x] Arbeitsgruppen (AGs)
-- [x] Kalender/Events
-- [x] Wiki/Wissensdatenbank
-- [x] Feed/News mit Newsletter
-- [x] Kontakte
-- [x] Onboarding-Flow
-- [x] Feedback-System
-- [x] Issue-Tracker
-- [x] Dark Mode
+- [x] Dashboard, Mitglieder, AGs, Kalender, Wiki, Feed, Kontakte
 
 ---
 
 ## 💡 Feature-Wünsche
 
-Hast du eine Idee? Nutze den **Feedback-Button** (Alpha-Badge unten links) oder melde dich beim Entwickler-Team!
+Hast du eine Idee? Nutze den **Feedback-Button** (Alpha-Badge) oder melde dich beim Entwickler-Team!
 
 ---
 
 <!-- 
 ================================================================================
-AI-INTERNAL: TODO-Liste für Entwicklung
-(Dieser Bereich wird nicht in der UI angezeigt)
+AI-INTERNAL: Technische Details
 ================================================================================
 
-## Backlog (Priorisiert)
+## Event-Slots (Aktueller Sprint)
 
-### Sprint: Event-Anmeldung (NEXT)
-- [ ] event_registrations Tabelle in Supabase
-- [ ] EventRegistrationService
-- [ ] Anmelde-Button im Kalender
-- [ ] Teilnehmerliste pro Event
-- [ ] RLS-Policies
+### Datenbank-Schema
+```sql
+-- Helfer-Slots pro Event
+CREATE TABLE event_slots (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    event_id UUID REFERENCES events(id) ON DELETE CASCADE,
+    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    description TEXT,
+    start_time TIME,
+    end_time TIME,
+    max_helpers INTEGER DEFAULT 5,
+    required_skills UUID[], -- Array von skill IDs
+    created_at TIMESTAMPTZ DEFAULT now()
+);
 
-### Sprint: Dateiverwaltung
-- [ ] Supabase Storage Bucket konfigurieren
-- [ ] File Upload Component
-- [ ] Ordner-Struktur
-- [ ] Suche/Filter
-- [ ] Vorschau für PDFs/Bilder
+-- Anmeldungen
+CREATE TABLE event_slot_signups (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    slot_id UUID REFERENCES event_slots(id) ON DELETE CASCADE,
+    member_id UUID REFERENCES members(id) ON DELETE CASCADE,
+    status TEXT DEFAULT 'confirmed', -- 'confirmed', 'cancelled'
+    signed_up_at TIMESTAMPTZ DEFAULT now(),
+    UNIQUE(slot_id, member_id)
+);
+```
 
-### Sprint: iCal Export
-- [ ] iCal-Format generieren
-- [ ] Download-Button im Kalender
-- [ ] Personalisierter iCal-Link (mit Token)
-- [ ] AG-spezifische Kalender
+## Skill-Tagging (Abgeschlossen)
 
-## Archiv (Abgeschlossen)
+### Datenbank-Schema
+```sql
+-- Skills pro Organisation
+CREATE TABLE skills (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    category TEXT, -- 'ability', 'interest', 'availability'
+    icon TEXT,
+    description TEXT,
+    sort_order INTEGER DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    UNIQUE(organization_id, name)
+);
 
-### Sprint: Email Templates (v0.2.1, 17.01.2026)
-- [x] DB Migration für logo_url, footer_text, primary_color
-- [x] Newsletter Edge Function vereinfacht
-- [x] UI für Email Design in Feed-Konfiguration
-- [x] Einfaches HTML-Template (Link-Liste)
-
-### Sprint: Roadmap (v0.2.1, 17.01.2026)
-- [x] ROADMAP.md erstellen
-- [x] Roadmap-Komponente mit Markdown-Rendering
-- [x] Link im Alpha-Badge
-- [x] Route /dashboard/roadmap
-
-### Sprint: Permissions (v0.2.0, 17.01.2026)
-- [x] SQL-Migration Permissions
-- [x] PermissionsService
-- [x] Member Model erweitert
-- [x] WorkingGroupsService AG-Rollen
-- [x] Feed/Wiki/Calendar Berechtigungen
-- [x] Member Dialog mit Permissions UI
-- [x] AG Members Dialog
+-- Member-Skill Zuordnung
+CREATE TABLE member_skills (
+    member_id UUID REFERENCES members(id) ON DELETE CASCADE,
+    skill_id UUID REFERENCES skills(id) ON DELETE CASCADE,
+    PRIMARY KEY (member_id, skill_id)
+);
+```
 
 -->

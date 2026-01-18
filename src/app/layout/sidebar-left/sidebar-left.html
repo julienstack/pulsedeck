@@ -120,12 +120,17 @@
     <div class="mt-auto border-t border-[var(--color-border)] pt-3 space-y-2">
         @if (auth.isAdmin()) {
         <div class="space-y-1">
-            <a routerLink="members"
+            <a routerLink="settings" routerLinkActive="border-linke"
                 class="flex items-center justify-between px-3 py-2 bg-[var(--color-surface-overlay)] rounded-lg border border-[var(--color-border)] hover:border-linke transition-colors cursor-pointer text-sm">
-                <span class="text-[var(--color-text-muted)]">Mitglieder</span>
+                <span class="text-[var(--color-text-muted)]">Einstellungen</span>
                 <i class="pi pi-cog text-linke text-sm"></i>
             </a>
-            <a routerLink="issue-tracker"
+            <a routerLink="members" routerLinkActive="border-linke"
+                class="flex items-center justify-between px-3 py-2 bg-[var(--color-surface-overlay)] rounded-lg border border-[var(--color-border)] hover:border-teal transition-colors cursor-pointer text-sm">
+                <span class="text-[var(--color-text-muted)]">Mitglieder</span>
+                <i class="pi pi-users text-teal text-sm"></i>
+            </a>
+            <a routerLink="issue-tracker" routerLinkActive="border-amber-500"
                 class="flex items-center justify-between px-3 py-2 bg-[var(--color-surface-overlay)] rounded-lg border border-[var(--color-border)] hover:border-amber-500 transition-colors cursor-pointer text-sm">
                 <span class="text-[var(--color-text-muted)]">Feedback</span>
                 <i class="pi pi-list-check text-amber-500 text-sm"></i>

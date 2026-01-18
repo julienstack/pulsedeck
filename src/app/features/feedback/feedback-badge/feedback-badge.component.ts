@@ -8,6 +8,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { SupabaseService } from '../../../shared/services/supabase';
 import { AuthService } from '../../../shared/services/auth.service';
 import { ThemeService } from '../../../shared/services/theme.service';
+import { OrganizationService } from '../../../shared/services/organization.service';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 
@@ -70,6 +71,7 @@ export class FeedbackBadgeComponent {
   private messageService = inject(MessageService);
   private themeService = inject(ThemeService);
   private router = inject(Router);
+  private org = inject(OrganizationService);
 
   /** Only show feedback badge to logged-in users */
   isLoggedIn = computed(() => !!this.supabase.user());
@@ -130,6 +132,12 @@ export class FeedbackBadgeComponent {
   }
 
   navigateToRoadmap() {
-    this.router.navigate(['/dashboard/roadmap']);
+    const slug = this.org.currentSlug();
+    if (slug) {
+      this.router.navigate(['/', slug, 'dashboard', 'roadmap']);
+    } else {
+      // Fallback: navigate to current URL + /roadmap (relative)
+      this.router.navigate(['roadmap'], { relativeTo: null });
+    }
   }
 }

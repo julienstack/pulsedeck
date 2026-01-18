@@ -538,7 +538,35 @@ export class OrgPublicPageComponent implements OnInit {
         }
 
         this.slug.set(slug);
+
+        // Wait for auth to be ready before checking login status
+        await this.waitForAuthReady();
+
+        // If user is logged in, redirect directly to dashboard
+        if (this.auth.isLoggedIn()) {
+            this.router.navigate(['/', slug, 'dashboard']);
+            return;
+        }
+
         await this.loadOrganization(slug);
+    }
+
+    private waitForAuthReady(): Promise<void> {
+        return new Promise((resolve) => {
+            if (this.supabase.authReady()) {
+                resolve();
+                return;
+            }
+            // Poll until ready (max 2 seconds)
+            let attempts = 0;
+            const interval = setInterval(() => {
+                attempts++;
+                if (this.supabase.authReady() || attempts > 20) {
+                    clearInterval(interval);
+                    resolve();
+                }
+            }, 100);
+        });
     }
 
     async loadOrganization(slug: string): Promise<void> {

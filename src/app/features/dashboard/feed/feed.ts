@@ -52,10 +52,9 @@ export class FeedComponent {
     sentItems = signal<FeedItem[]>([]);
 
     // Admin View Switch
-    adminView = signal<'review' | 'config' | 'sent'>('review');
+    adminView = signal<'review' | 'sent'>('review');
     adminViewOptions = [
         { label: 'Prüfung', value: 'review', icon: 'pi pi-list-check' },
-        { label: 'Konfiguration', value: 'config', icon: 'pi pi-cog' },
         { label: 'Archiv', value: 'sent', icon: 'pi pi-history' }
     ];
 

@@ -1,0 +1,440 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="p-4 md:p-6 max-w-5xl mx-auto">
+    <!-- Header -->
+    <div class="mb-6">
+        <div class="flex items-center gap-3">
+            <div class="p-2 rounded-lg bg-linke/10">
+                <i class="pi pi-cog text-linke text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold text-[var(--color-text)]">Einstellungen</h1>
+                <p class="text-[var(--color-text-muted)] text-sm">Verwalte deine Organisation</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <p-tabs [(value)]="activeTab">
+        <p-tablist>
+            <p-tab value="skills">
+                <i class="pi pi-tags mr-2"></i>
+                Fähigkeiten
+            </p-tab>
+            <p-tab value="newsletter">
+                <i class="pi pi-envelope mr-2"></i>
+                Newsletter
+            </p-tab>
+            <p-tab value="organization">
+                <i class="pi pi-building mr-2"></i>
+                Organisation
+            </p-tab>
+        </p-tablist>
+
+        <p-tabpanels>
+            <!-- SKILLS TAB -->
+            <p-tabpanel value="skills">
+                <div class="py-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h2 class="text-lg font-semibold text-[var(--color-text)]">
+                                Skills verwalten
+                            </h2>
+                            <p class="text-sm text-[var(--color-text-muted)]">
+                                Fähigkeiten, Interessen und Verfügbarkeit für Mitgliederprofile
+                            </p>
+                        </div>
+                        <p-button label="Neuer Skill" icon="pi pi-plus" (onClick)="openNewSkill()"></p-button>
+                    </div>
+
+                    <p-table [value]="skills()" [paginator]="skills().length > 10" [rows]="10"
+                        styleClass="p-datatable-sm">
+                        <ng-template #header>
+                            <tr>
+                                <th>Name</th>
+                                <th>Kategorie</th>
+                                <th>Icon</th>
+                                <th class="w-32">Aktionen</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template #body let-skill>
+                            <tr>
+                                <td>
+                                    <span class="font-medium">{{ skill.name }}</span>
+                                    @if (skill.description) {
+                                    <p class="text-xs text-[var(--color-text-muted)]">
+                                        {{ skill.description }}
+                                    </p>
+                                    }
+                                </td>
+                                <td>
+                                    <p-tag [value]="getCategoryLabel(skill.category)"
+                                        [severity]="getCategorySeverity(skill.category)"></p-tag>
+                                </td>
+                                <td>
+                                    @if (skill.icon) {
+                                    <i [class]="'pi ' + skill.icon + ' text-lg'"></i>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="flex gap-1">
+                                        <p-button icon="pi pi-pencil" [text]="true" severity="secondary"
+                                            (onClick)="openEditSkill(skill)"></p-button>
+                                        <p-button icon="pi pi-trash" [text]="true" severity="danger"
+                                            (onClick)="confirmDeleteSkill(skill)"></p-button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template #emptymessage>
+                            <tr>
+                                <td colspan="4" class="text-center py-8 text-[var(--color-text-muted)]">
+                                    Noch keine Skills angelegt
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </p-tabpanel>
+
+            <!-- NEWSLETTER TAB -->
+            <p-tabpanel value="newsletter">
+                <div class="py-4">
+                    @if (newsletterConfig(); as config) {
+                    <div class="bg-[var(--color-surface-raised)] rounded-xl border border-[var(--color-border)] p-6">
+                        <div class="flex justify-between items-center mb-4 border-b border-[var(--color-border)] pb-3">
+                            <h2 class="text-lg font-semibold text-[var(--color-text)] flex items-center gap-2">
+                                <i class="pi pi-envelope"></i> Newsletter-Konfiguration
+                            </h2>
+                            <p-tag [value]="config.active ? 'Aktiv' : 'Inaktiv'"
+                                [severity]="config.active ? 'success' : 'secondary'"></p-tag>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <!-- Left Column: Settings -->
+                            <div class="space-y-4">
+                                <!-- Frequency -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--color-text)] mb-2">
+                                        Versandrhythmus
+                                    </label>
+                                    <p-select [options]="frequencies" [(ngModel)]="config.frequency" optionLabel="label"
+                                        optionValue="value" styleClass="w-full"></p-select>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4">
+                                    <!-- Day of Week -->
+                                    <div *ngIf="config.frequency === 'weekly'">
+                                        <label class="block text-sm font-medium text-[var(--color-text)] mb-2">
+                                            Versandtag
+                                        </label>
+                                        <p-select [options]="days" [(ngModel)]="config.day_of_week" optionLabel="label"
+                                            optionValue="value" styleClass="w-full"></p-select>
+                                    </div>
+
+                                    <!-- Time -->
+                                    <div *ngIf="config.frequency !== 'manual'">
+                                        <label class="block text-sm font-medium text-[var(--color-text)] mb-2">
+                                            Uhrzeit
+                                        </label>
+                                        <input type="time" pInputText [(ngModel)]="config.time_of_day"
+                                            class="w-full h-[42px]" />
+                                    </div>
+                                </div>
+
+                                <!-- Active Checkbox -->
+                                <div
+                                    class="flex items-center justify-between p-3 bg-[var(--color-surface-ground)] rounded-lg border border-[var(--color-border)]">
+                                    <label for="active" class="cursor-pointer font-medium text-[var(--color-text)]">
+                                        Automatischer Versand
+                                    </label>
+                                    <p-checkbox [(ngModel)]="config.active" [binary]="true"
+                                        inputId="active"></p-checkbox>
+                                </div>
+
+                                <!-- SMTP Configuration -->
+                                <p-fieldset legend="E-Mail Server (SMTP)" [toggleable]="true" [collapsed]="true"
+                                    styleClass="border border-[var(--color-border)] rounded-lg overflow-hidden bg-[var(--color-surface-ground)]">
+                                    <div class="grid grid-cols-1 gap-4 p-1">
+                                        <div>
+                                            <label class="text-sm text-[var(--color-text)]">Host</label>
+                                            <input pInputText [(ngModel)]="config.smtp_host"
+                                                placeholder="smtp.provider.com" class="w-full mt-1" />
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="text-sm text-[var(--color-text)]">Port</label>
+                                                <input pInputText type="number" [(ngModel)]="config.smtp_port"
+                                                    placeholder="587" class="w-full mt-1" />
+                                            </div>
+                                            <div class="flex items-end pb-1">
+                                                <div class="flex items-center gap-2">
+                                                    <p-checkbox [(ngModel)]="config.smtp_secure" [binary]="true"
+                                                        inputId="secure"></p-checkbox>
+                                                    <label for="secure"
+                                                        class="cursor-pointer text-sm text-[var(--color-text)]">SSL/TLS</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="text-sm text-[var(--color-text)]">User</label>
+                                                <input pInputText [(ngModel)]="config.smtp_user" class="w-full mt-1"
+                                                    autocomplete="off" />
+                                            </div>
+                                            <div>
+                                                <label class="text-sm text-[var(--color-text)]">Password</label>
+                                                <input pInputText type="password" [(ngModel)]="config.smtp_pass"
+                                                    class="w-full mt-1" autocomplete="new-password" />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm text-[var(--color-text)]">From Email</label>
+                                            <input pInputText [(ngModel)]="config.smtp_from"
+                                                placeholder="newsletter@example.com" class="w-full mt-1" />
+                                        </div>
+                                    </div>
+                                </p-fieldset>
+
+                                <!-- Email Design -->
+                                <p-fieldset legend="E-Mail Design" [toggleable]="true" [collapsed]="true"
+                                    styleClass="border border-[var(--color-border)] rounded-lg overflow-hidden bg-[var(--color-surface-ground)]">
+                                    <div class="grid grid-cols-1 gap-4 p-1">
+                                        <div>
+                                            <label class="text-sm text-[var(--color-text)]">Logo-URL</label>
+                                            <input pInputText [(ngModel)]="config.logo_url"
+                                                placeholder="https://example.com/logo.png" class="w-full mt-1" />
+                                            <small class="text-[var(--color-text-muted)]">Leer lassen für
+                                                Text-Logo</small>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm text-[var(--color-text)]">Footer-Text</label>
+                                            <input pInputText [(ngModel)]="config.footer_text"
+                                                placeholder="Lexion - Vereinsverwaltung" class="w-full mt-1" />
+                                        </div>
+                                        <div>
+                                            <label class="text-sm text-[var(--color-text)]">Primärfarbe</label>
+                                            <div class="flex items-center gap-2 mt-1">
+                                                <input type="color" [(ngModel)]="config.primary_color"
+                                                    class="w-10 h-10 rounded border border-[var(--color-border)] cursor-pointer" />
+                                                <input pInputText [(ngModel)]="config.primary_color"
+                                                    placeholder="#DE0000" class="flex-1 font-mono" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </p-fieldset>
+                            </div>
+
+                            <!-- Right Column: Status & Actions -->
+                            <div
+                                class="flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-[var(--color-border)] pt-4 lg:pt-0 lg:pl-8">
+                                <div class="space-y-6">
+                                    <div>
+                                        <div
+                                            class="text-xs uppercase tracking-wider text-[var(--color-text-muted)] mb-1">
+                                            Letzter Versand
+                                        </div>
+                                        <div class="font-mono text-lg text-[var(--color-text)]">
+                                            @if (config.last_sent_at) {
+                                            {{ config.last_sent_at | date:'dd.MM.yyyy HH:mm' }}
+                                            } @else {
+                                            -
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div
+                                            class="text-xs uppercase tracking-wider text-[var(--color-text-muted)] mb-1">
+                                            Nächster geplanter Lauf
+                                        </div>
+                                        <div class="font-bold text-lg text-linke">
+                                            @if (config.active && config.frequency !== 'manual') {
+                                            Laut Zeitplan
+                                            } @else {
+                                            Manuell
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap gap-3 mt-6 justify-end">
+                                    <p-button label="Speichern" icon="pi pi-save" (onClick)="saveNewsletterConfig()"
+                                        severity="primary" [raised]="true"></p-button>
+                                    <p-button label="Test-E-Mail" icon="pi pi-envelope" severity="secondary"
+                                        [outlined]="true" (onClick)="openTestEmailDialog()"></p-button>
+                                    <p-button label="Jetzt Senden" icon="pi pi-send" severity="danger" [outlined]="true"
+                                        (onClick)="triggerNewsletter()" pTooltip="Newsletter sofort versenden"
+                                        tooltipPosition="left"></p-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    } @else {
+                    <div class="text-center py-12 text-[var(--color-text-muted)]">
+                        <i class="pi pi-spin pi-spinner text-2xl mb-2"></i>
+                        <p>Lade Newsletter-Einstellungen...</p>
+                    </div>
+                    }
+                </div>
+            </p-tabpanel>
+
+            <!-- ORGANIZATION TAB -->
+            <p-tabpanel value="organization">
+                <div class="py-4">
+                    <div class="bg-[var(--color-surface-raised)] rounded-xl border border-[var(--color-border)] p-6">
+                        <h2 class="text-lg font-semibold text-[var(--color-text)] mb-4">
+                            Organisations-Einstellungen
+                        </h2>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Name -->
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--color-text)] mb-2">
+                                    Name
+                                </label>
+                                <input type="text" pInputText [(ngModel)]="orgForm().name" class="w-full" />
+                            </div>
+
+                            <!-- Slug (readonly) -->
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--color-text)] mb-2">
+                                    URL-Slug
+                                </label>
+                                <input type="text" pInputText [value]="orgForm().slug" class="w-full"
+                                    [disabled]="true" />
+                                <p class="text-xs text-[var(--color-text-muted)] mt-1">
+                                    Kann nicht geändert werden
+                                </p>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-[var(--color-text)] mb-2">
+                                    Beschreibung
+                                </label>
+                                <textarea pInputTextarea [(ngModel)]="orgForm().description" rows="3" class="w-full"
+                                    placeholder="Kurze Beschreibung deiner Organisation"></textarea>
+                            </div>
+
+                            <!-- Primary Color -->
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--color-text)] mb-2">
+                                    Primärfarbe
+                                </label>
+                                <div class="flex items-center gap-3">
+                                    <input type="color" [(ngModel)]="orgForm().primary_color"
+                                        class="w-12 h-10 rounded border border-[var(--color-border)] cursor-pointer" />
+                                    <input type="text" pInputText [(ngModel)]="orgForm().primary_color" class="flex-1"
+                                        placeholder="#e3000f" />
+                                </div>
+                            </div>
+
+                            <!-- Logo URL -->
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--color-text)] mb-2">
+                                    Logo URL
+                                </label>
+                                <input type="text" pInputText [(ngModel)]="orgForm().logo_url" class="w-full"
+                                    placeholder="https://example.com/logo.png" />
+                            </div>
+                        </div>
+
+                        <p-divider></p-divider>
+
+                        <div class="flex justify-end">
+                            <p-button label="Speichern" icon="pi pi-check" (onClick)="saveOrgSettings()"></p-button>
+                        </div>
+                    </div>
+                </div>
+            </p-tabpanel>
+        </p-tabpanels>
+    </p-tabs>
+</div>
+
+<!-- Skill Edit Dialog -->
+<p-dialog [(visible)]="skillDialogVisible" [modal]="true" [style]="{ width: '450px' }"
+    [header]="editingSkill()?.id ? 'Skill bearbeiten' : 'Neuer Skill'">
+    @if (editingSkill()) {
+    <div class="space-y-4">
+        <!-- Name -->
+        <div>
+            <label class="block text-sm font-medium text-[var(--color-text)] mb-2">
+                Name *
+            </label>
+            <input type="text" pInputText [(ngModel)]="editingSkill()!.name" class="w-full"
+                placeholder="z.B. Führerschein Klasse B" />
+        </div>
+
+        <!-- Category -->
+        <div>
+            <label class="block text-sm font-medium text-[var(--color-text)] mb-2">
+                Kategorie
+            </label>
+            <p-select [options]="categories" [(ngModel)]="editingSkill()!.category" optionLabel="label"
+                optionValue="value" styleClass="w-full"></p-select>
+        </div>
+
+        <!-- Icon -->
+        <div>
+            <label class="block text-sm font-medium text-[var(--color-text)] mb-2">
+                Icon
+            </label>
+            <p-select [options]="iconOptions" [(ngModel)]="editingSkill()!.icon" optionLabel="label" optionValue="value"
+                styleClass="w-full">
+                <ng-template #selectedItem let-selected>
+                    <div class="flex items-center gap-2">
+                        <i [class]="'pi ' + selected.value"></i>
+                        {{ selected.label }}
+                    </div>
+                </ng-template>
+                <ng-template #item let-option>
+                    <div class="flex items-center gap-2">
+                        <i [class]="'pi ' + option.value"></i>
+                        {{ option.label }}
+                    </div>
+                </ng-template>
+            </p-select>
+        </div>
+
+        <!-- Description -->
+        <div>
+            <label class="block text-sm font-medium text-[var(--color-text)] mb-2">
+                Beschreibung (optional)
+            </label>
+            <textarea pInputTextarea [(ngModel)]="editingSkill()!.description" rows="2" class="w-full"
+                placeholder="Kurze Erklärung..."></textarea>
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <div class="flex justify-end gap-2">
+            <p-button label="Abbrechen" [text]="true" severity="secondary"
+                (onClick)="skillDialogVisible.set(false)"></p-button>
+            <p-button label="Speichern" icon="pi pi-check" [loading]="loading()" (onClick)="saveSkill()"></p-button>
+        </div>
+    </ng-template>
+    }
+</p-dialog>
+
+<!-- Test Email Dialog -->
+<p-dialog [(visible)]="testEmailDialogVisible" header="Newsletter Vorschau senden" [modal]="true"
+    [style]="{width: '400px'}" [resizable]="false">
+    <div class="flex flex-col gap-4 pt-2">
+        <p class="text-[var(--color-text-muted)] text-sm">Sendet eine Vorschau aller aktuellen Beiträge an die
+            angegebene Adresse.</p>
+        <div class="flex flex-col gap-2">
+            <label class="font-medium text-sm text-[var(--color-text)]">E-Mail Adresse</label>
+            <input pInputText [(ngModel)]="testEmail" placeholder="name@beispiel.de" class="w-full"
+                (keydown.enter)="sendTestEmail()" />
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <div class="flex justify-end gap-2 pt-4">
+            <p-button label="Abbrechen" (onClick)="testEmailDialogVisible.set(false)" [text]="true"
+                severity="secondary"></p-button>
+            <p-button label="Senden" icon="pi pi-send" (onClick)="sendTestEmail()" [raised]="true"></p-button>
+        </div>
+    </ng-template>
+</p-dialog>

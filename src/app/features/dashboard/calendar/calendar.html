@@ -122,6 +122,13 @@
                                 pTooltip="Teilnehmer anzeigen" tooltipPosition="top">
                                 <i class="pi pi-users text-xs"></i>
                             </button>
+
+                            <!-- Helper Slots Button -->
+                            <button (click)="openManageSlots(event); $event.stopPropagation()"
+                                class="w-7 h-7 rounded-full flex items-center justify-center text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-overlay)] transition-colors"
+                                pTooltip="Helferschichten" tooltipPosition="top">
+                                <i class="pi pi-list-check text-xs"></i>
+                            </button>
                             }
 
                             @if (canCreateEvent()) {
@@ -249,4 +256,108 @@
     <ng-template pTemplate="footer">
         <p-button label="Schließen" severity="secondary" [text]="true" (click)="participantsDialogVisible.set(false)" />
     </ng-template>
+</p-dialog>
+
+<!-- Helper Slots Dialog -->
+<p-dialog [header]="'Schichten: ' + currentEvent.title" [visible]="manageSlotsDialogVisible()"
+    (visibleChange)="manageSlotsDialogVisible.set($event)" [modal]="true" [draggable]="false" [resizable]="false"
+    maskStyleClass="backdrop-blur-sm bg-black/50" [style]="{width: '500px', maxWidth: '95vw'}">
+
+    <div class="space-y-6">
+        <!-- Admin: Create Slot -->
+        @if (canCreateEvent()) {
+        <div class="bg-[var(--color-surface-raised)] p-4 rounded-lg border border-[var(--color-border)]">
+            <h4 class="text-sm font-semibold mb-3">Neue Schicht erstellen</h4>
+            <div class="flex gap-2">
+                <input pInputText [(ngModel)]="newSlotTitle" placeholder="z.B. Aufbau" class="flex-1 p-inputtext-sm" />
+
+                <!-- Simple Number Input -->
+                <input type="number" pInputText [(ngModel)]="newSlotMaxHelpers" min="1" max="25"
+                    class="w-20 text-center p-inputtext-sm font-semibold" pTooltip="Anzahl Helfer"
+                    tooltipPosition="top" />
+
+                <p-button icon="pi pi-plus" (click)="createSlot()" [loading]="slotsLoading()"
+                    [disabled]="!newSlotTitle()" styleClass="p-button-sm"></p-button>
+            </div>
+        </div>
+        }
+
+        <!-- Slots List -->
+        <div class="space-y-3">
+            @for (slot of currentSlots(); track slot.id) {
+            <div class="p-4 bg-[var(--color-surface-card)] rounded-xl border border-[var(--color-border)]">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <h3 class="font-bold text-[var(--color-text)]">{{ slot.title }}</h3>
+                        <p class="text-xs text-[var(--color-text-muted)] mt-1">
+                            @if (slot.start_time) {
+                            <i class="pi pi-clock mr-1"></i> {{ slot.start_time }} - {{ slot.end_time || 'Ende' }}
+                            }
+                        </p>
+                    </div>
+
+                    @if (canCreateEvent()) {
+                    <button (click)="deleteSlot(slot.id)"
+                        class="text-[var(--color-text-muted)] hover:text-red-400 transition-colors bg-transparent border-0 p-1">
+                        <i class="pi pi-trash"></i>
+                    </button>
+                    }
+                </div>
+
+                <!-- Capacity Bar -->
+                <div class="mb-4">
+                    <div class="flex justify-between text-xs text-[var(--color-text-muted)] mb-1">
+                        <span>Belegung</span>
+                        <span [class.text-red-400]="!slotService.hasCapacity(slot)">
+                            {{ slot.signup_count || 0 }} / {{ slot.max_helpers }}
+                        </span>
+                    </div>
+                    <div class="h-2 bg-[var(--color-surface-raised)] rounded-full overflow-hidden">
+                        <div class="h-full bg-linke transition-all duration-500"
+                            [style.width.%]="((slot.signup_count || 0) / slot.max_helpers) * 100"
+                            [class.bg-red-400]="!slotService.hasCapacity(slot)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                @if (slot.is_signed_up) {
+                <button (click)="toggleSlotSignup(slot)"
+                    class="w-full py-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 font-medium text-sm transition-colors border border-transparent">
+                    <i class="pi pi-times mr-2"></i> Ich kann doch nicht
+                </button>
+                } @else if (slotService.hasCapacity(slot)) {
+                <button (click)="toggleSlotSignup(slot)"
+                    class="w-full py-2 rounded-lg bg-linke/10 text-linke hover:bg-linke/20 font-medium text-sm transition-colors border border-transparent">
+                    <i class="pi pi-check mr-2"></i> Ich bin dabei
+                </button>
+                } @else {
+                <button disabled
+                    class="w-full py-2 rounded-lg bg-[var(--color-surface-raised)] text-[var(--color-text-muted)] font-medium text-sm cursor-not-allowed border border-[var(--color-border)]">
+                    <i class="pi pi-lock mr-2"></i> Schicht voll
+                </button>
+                }
+
+                <!-- Signups Avatar List (Small) -->
+                @if (slot.signups && slot.signups!.length > 0) {
+                <div class="flex -space-x-2 mt-3 pt-3 border-t border-[var(--color-border)]/50">
+                    @for (signup of slot.signups; track signup.id) {
+                    <div class="w-6 h-6 rounded-full border border-[var(--color-surface-card)] flex items-center justify-center text-[8px] font-bold text-white cursor-help"
+                        [style.background-color]="getAvatarColor(signup.member?.name || '')"
+                        [pTooltip]="signup.member?.name" tooltipPosition="top">
+                        {{ getInitials(signup.member?.name || '') }}
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+            } @empty {
+            <div
+                class="text-center py-8 text-[var(--color-text-muted)] border border-dashed border-[var(--color-border)] rounded-xl">
+                <i class="pi pi-list text-2xl mb-2 opacity-50"></i>
+                <p class="text-sm">Noch keine Schichten eingetragen.</p>
+            </div>
+            }
+        </div>
+    </div>
 </p-dialog>

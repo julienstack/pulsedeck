@@ -3,6 +3,7 @@
  */
 export interface CalendarEvent {
     id?: string;
+    organization_id?: string;
     title: string;
     date: string;
     start_time: string;

@@ -11,6 +11,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageModule } from 'primeng/message';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -25,6 +26,7 @@ import {
   EventRegistration,
   RegistrationStatus
 } from '../../../shared/services/event-registration.service';
+import { EventSlotService, EventSlot, CreateSlotData } from '../../../shared/services/event-slot.service';
 
 @Component({
   selector: 'app-calendar',
@@ -45,6 +47,7 @@ import {
     ConfirmDialogModule,
     ToastModule,
     TooltipModule,
+    InputNumberModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './calendar.html',
@@ -57,10 +60,9 @@ export class CalendarComponent implements OnInit {
   private onboardingService = inject(OnboardingService);
   public auth = inject(AuthService);
   public permissions = inject(PermissionsService);
-  public registrationService = inject(EventRegistrationService);
-
-  // For AG linking
-  private workingGroupsService = inject(WorkingGroupsService);
+  readonly registrationService = inject(EventRegistrationService);
+  readonly slotService = inject(EventSlotService);
+  readonly workingGroupsService = inject(WorkingGroupsService);
   workingGroups = this.workingGroupsService.workingGroups;
 
   // Permission-based visibility
@@ -376,6 +378,86 @@ export class CalendarComponent implements OnInit {
         summary: 'Fehler',
         detail: 'Link konnte nicht kopiert werden.',
       });
+    }
+  }
+
+  // =========================================================================
+  // HELPER SLOTS
+  // =========================================================================
+
+  manageSlotsDialogVisible = signal<boolean>(false);
+  currentSlots = this.slotService.slots;
+  slotsLoading = signal(false);
+  newSlotTitle = signal('');
+  newSlotMaxHelpers = signal(3);
+
+  async openManageSlots(event: CalendarEvent): Promise<void> {
+    this.currentEvent = JSON.parse(JSON.stringify(event)); // Deep copy to avoid reference issues
+    this.manageSlotsDialogVisible.set(true);
+    if (event.id) {
+      await this.slotService.loadSlots(event.id, this.auth.currentMember()?.id);
+    }
+  }
+
+  async createSlot(): Promise<void> {
+    const eventId = this.currentEvent.id;
+    const orgId = this.currentEvent.organization_id;
+
+    if (!this.newSlotTitle()) {
+      this.messageService.add({ severity: 'warn', summary: 'Fehler', detail: 'Bitte Titel eingeben' });
+      return;
+    }
+    if (!eventId || !orgId) {
+      console.error('Validation failed:', { eventId, orgId, title: this.newSlotTitle() });
+      this.messageService.add({ severity: 'error', summary: 'Fehler', detail: 'Event-Daten unvollständig' });
+      return;
+    }
+
+    this.slotsLoading.set(true);
+    const data: CreateSlotData = {
+      event_id: eventId,
+      organization_id: orgId,
+      title: this.newSlotTitle(),
+      max_helpers: this.newSlotMaxHelpers(),
+      sort_order: this.currentSlots().length
+    };
+
+    await this.slotService.createSlot(data);
+    await this.slotService.loadSlots(eventId, this.auth.currentMember()?.id);
+
+    // Reset form
+    this.newSlotTitle.set('');
+    this.newSlotMaxHelpers.set(3);
+    this.slotsLoading.set(false);
+  }
+
+  async deleteSlot(slotId: string): Promise<void> {
+    await this.slotService.deleteSlot(slotId);
+    if (this.currentEvent.id) {
+      await this.slotService.loadSlots(this.currentEvent.id, this.auth.currentMember()?.id);
+    }
+  }
+
+  async toggleSlotSignup(slot: EventSlot): Promise<void> {
+    const memberId = this.auth.currentMember()?.id;
+    if (!memberId) return;
+
+    if (slot.is_signed_up) {
+      await this.slotService.cancelSignup(slot.id, memberId);
+    } else {
+      if (!this.slotService.hasCapacity(slot)) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Schicht voll',
+          detail: 'Diese Schicht ist bereits voll belegt.'
+        });
+        return;
+      }
+      await this.slotService.signUp(slot.id, memberId, slot.organization_id);
+    }
+
+    if (this.currentEvent.id) {
+      await this.slotService.loadSlots(this.currentEvent.id, memberId);
     }
   }
 }
