@@ -159,6 +159,31 @@ export class SkillService {
         return true;
     }
 
+    /**
+     * Load all member skills for an organization (bulk load for filtering)
+     */
+    async getAllMemberSkills(organizationId: string): Promise<Record<string, string[]>> {
+        const { data, error } = await this.supabase.client
+            .from('member_skills')
+            .select('member_id, skill_id, member:members!inner(organization_id)')
+            .eq('member.organization_id', organizationId);
+
+        if (error) {
+            console.error('Error loading all member skills:', error);
+            return {};
+        }
+
+        const map: Record<string, string[]> = {};
+        if (data) {
+            data.forEach((row: any) => {
+                const mid = row.member_id;
+                if (!map[mid]) map[mid] = [];
+                map[mid].push(row.skill_id);
+            });
+        }
+        return map;
+    }
+
     // =========================================================================
     // ADMIN: Skill Management
     // =========================================================================

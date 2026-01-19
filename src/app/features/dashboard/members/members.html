@@ -32,15 +32,71 @@
     </div>
 
     <!-- Search Bar -->
-    <div class="flex items-center gap-2 mb-3">
-        <div class="relative flex-1">
-            <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] text-sm"></i>
-            <input pInputText type="text" (input)="onGlobalFilter($event)" placeholder="Suchen..."
-                class="w-full pl-9 py-2 text-sm !bg-[var(--color-surface-raised)] !border-[var(--color-border)] rounded-lg" />
+    <!-- Search & Filter Bar -->
+    <div class="flex flex-col gap-3 mb-4">
+        <div class="flex items-center gap-2">
+            <div class="relative flex-1">
+                <i
+                    class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] text-sm"></i>
+                <input pInputText type="text" (input)="onGlobalFilter($event)" [value]="currentSearchTerm()"
+                    placeholder="Suchen..."
+                    class="w-full pl-9 py-2 text-sm !bg-[var(--color-surface-raised)] !border-[var(--color-border)] rounded-lg" />
+            </div>
+
+            <p-button icon="pi pi-filter" [outlined]="!showFilters() && activeFilterCount() === 0"
+                [severity]="activeFilterCount() > 0 ? 'contrast' : 'secondary'" (click)="toggleFilters()"
+                [badge]="activeFilterCount() > 0 ? activeFilterCount().toString() : undefined"
+                badgeClass="bg-linke text-white border-none min-w-[1rem] h-[1rem] leading-[1rem] text-[10px]"
+                pTooltip="Filter anzeigen">
+            </p-button>
+
+            @if (auth.isAdmin() && selectedMembers && selectedMembers.length > 0) {
+            <p-button icon="pi pi-trash" severity="danger" size="small" [outlined]="true"
+                (click)="deleteSelected()"></p-button>
+            }
         </div>
-        @if (auth.isAdmin() && selectedMembers && selectedMembers.length > 0) {
-        <p-button icon="pi pi-trash" severity="danger" size="small" [outlined]="true"
-            (click)="deleteSelected()"></p-button>
+
+        <!-- Filter Panel -->
+        @if (showFilters()) {
+        <div class="p-4 bg-[var(--color-surface-raised)] rounded-xl border border-[var(--color-border)]">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-sm font-semibold text-[var(--color-text)] flex items-center gap-2">
+                    <i class="pi pi-filter text-[var(--color-text-muted)]"></i>
+                    Erweiterte Filter
+                </h3>
+                <p-button label="Zurücksetzen" icon="pi pi-times" [text]="true" size="small" severity="secondary"
+                    (click)="clearFilters()" [disabled]="activeFilterCount() === 0"></p-button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Skill Filter -->
+                <div>
+                    <label class="block text-xs font-medium text-[var(--color-text-muted)] mb-1">Fähigkeiten (Mitglied
+                        hat ALLE)</label>
+                    <p-multiSelect [options]="skillService.skills()" [(ngModel)]="selectedSkillIds" optionLabel="name"
+                        optionValue="id" placeholder="Skills auswählen..." display="chip" styleClass="w-full"
+                        [showClear]="true" [filter]="true" emptyMessage="Keine Skills gefunden">
+                        <ng-template let-skill pTemplate="item">
+                            <div class="flex items-center gap-2">
+                                <i class="pi" [class]="skillService.getCategoryIcon(skill.category)"></i>
+                                <span>{{skill.name}}</span>
+                            </div>
+                        </ng-template>
+                    </p-multiSelect>
+                </div>
+
+                <!-- Location Filter -->
+                <div>
+                    <label class="block text-xs font-medium text-[var(--color-text-muted)] mb-1">Ort / PLZ</label>
+                    <span class="relative w-full block">
+                        <i
+                            class="pi pi-map-marker absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"></i>
+                        <input pInputText [(ngModel)]="locationFilter" placeholder="z.B. 10115 oder Berlin"
+                            class="w-full pl-9" />
+                    </span>
+                </div>
+            </div>
+        </div>
         }
     </div>
 

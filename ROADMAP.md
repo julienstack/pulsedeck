@@ -19,11 +19,7 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 
 ## 🚧 Aktuell in Arbeit
 
-### 📋 Event-Helfer-Slots (Schichtplan)
-- [ ] Slot-Verwaltung bei Events (Aufbau, Theke, Einlass)
-- [ ] Helfer-Anmeldung pro Slot
-- [ ] Max-Kapazität pro Slot
-- [ ] Skill-Anforderungen pro Slot
+*(Wähle das nächste Feature aus Phase 2)*
 
 ---
 
@@ -36,8 +32,8 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 | 1 | **Skill-Tagging** | ✅ Fertig | Mitglieder taggen ihre Fähigkeiten |
 | 2 | **Admin-Einstellungen** | ✅ Fertig | Zentraler Admin-Bereich für Skills, Newsletter, Org-Settings |
 | 3 | **Org erstellen** | ✅ Fertig | Eingeloggte User können neue Orgs erstellen |
-| 4 | **Event-Helfer-Slots** | 🚧 In Arbeit | Events mit Schichtplan |
-| 5 | **Admin-Filter** | ⏳ Geplant | Vorstand filtert nach Skills/Ort |
+| 4 | **Event-Helfer-Slots** | ✅ Fertig | Events mit Schichtplan |
+| 5 | **Admin-Filter** | ✅ Fertig | Vorstand filtert nach Skills/Ort |
 
 ### Phase 2: Engagement ⭐⭐
 
@@ -58,6 +54,19 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 ---
 
 ## ✅ Abgeschlossen (Patch Notes)
+
+### v0.7.1 – 19. Januar 2026
+
+**🔍 Admin & Mitglieder Filter**
+- [x] Erweiterte Mitglieder-Suche
+- [x] Filter nach Skills, Interessen & Verfügbarkeit
+- [x] Geografische Suche (PLZ/Ort)
+- [x] Performance-Optimierung (Bulk-Load)
+
+**📱 Android App (MVP)**
+- [x] Capacitor Integration
+- [x] Android Plattform Setup
+- [x] Online-Only Strategie (Webview)
 
 ### v0.7.0 – 18. Januar 2026
 

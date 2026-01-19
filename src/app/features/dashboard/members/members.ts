@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, ViewChild, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as XLSX from 'xlsx';
 import { FormsModule } from '@angular/forms';
@@ -29,6 +29,9 @@ import {
   PERMISSION_LABELS,
   ALL_PERMISSIONS,
 } from '../../../shared/services/permissions.service';
+import { SkillService, Skill } from '../../../shared/services/skill.service';
+import { OrganizationService } from '../../../shared/services/organization.service';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 @Component({
   selector: 'app-members',
@@ -51,7 +54,8 @@ import {
     IconFieldModule,
     InputIconModule,
     TooltipModule,
-    CheckboxModule
+    CheckboxModule,
+    MultiSelectModule
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './members.html',
@@ -65,10 +69,18 @@ export class MembersComponent implements OnInit {
   private messageService = inject(MessageService);
   public auth = inject(AuthService);
   public permissionsService = inject(PermissionsService);
+  public skillService = inject(SkillService);
+  private orgService = inject(OrganizationService);
 
   members = this.membersService.members;
   loading = this.membersService.loading;
   error = this.membersService.error;
+
+  // Filter state
+  showFilters = signal(false);
+  selectedSkillIds = signal<string[]>([]);
+  locationFilter = signal('');
+  memberSkillsMap = signal<Record<string, string[]>>({});
 
   selectedMembers: Member[] = [];
   mobileExpandedRows: Record<string, boolean> = {}; // Mobile-specific expand state
@@ -97,7 +109,13 @@ export class MembersComponent implements OnInit {
 
   filteredMembers = computed(() => {
     const term = this.currentSearchTerm().toLowerCase();
+    const skillIds = this.selectedSkillIds();
+    const location = this.locationFilter().toLowerCase().trim();
+    const skillsMap = this.memberSkillsMap();
+
     let mList = this.members();
+
+    // Text search filter
     if (term) {
       mList = mList.filter(m =>
         m.name.toLowerCase().includes(term) ||
@@ -105,7 +123,32 @@ export class MembersComponent implements OnInit {
         m.email.toLowerCase().includes(term)
       );
     }
+
+    // Skills filter (member must have ALL selected skills)
+    if (skillIds.length > 0) {
+      mList = mList.filter(m => {
+        const memberSkills = skillsMap[m.id!] || [];
+        return skillIds.every(sid => memberSkills.includes(sid));
+      });
+    }
+
+    // Location filter (PLZ or city)
+    if (location) {
+      mList = mList.filter(m =>
+        m.zip_code?.toLowerCase().includes(location) ||
+        m.city?.toLowerCase().includes(location)
+      );
+    }
+
     return mList;
+  });
+
+  // Active filter count for badge
+  activeFilterCount = computed(() => {
+    let count = 0;
+    if (this.selectedSkillIds().length > 0) count++;
+    if (this.locationFilter().trim()) count++;
+    return count;
   });
 
   dialogVisible = signal(false);
@@ -147,8 +190,52 @@ export class MembersComponent implements OnInit {
   allPermissions = ALL_PERMISSIONS;
   permissionLabels = PERMISSION_LABELS;
 
+  constructor() {
+    // Reload skills when Organization changes
+    effect(() => {
+      const org = this.orgService.currentOrganization();
+      if (org?.id) {
+        this.skillService.loadSkills(org.id);
+      }
+    });
+
+    // Reload mappings when Organization OR Members change
+    effect(() => {
+      const org = this.orgService.currentOrganization();
+      const members = this.members(); // Dependency on members list
+
+      if (org?.id && members.length > 0) {
+        this.loadMemberSkillsMap(org.id);
+      }
+    });
+  }
+
   ngOnInit(): void {
     this.membersService.fetchMembers();
+  }
+
+  /**
+   * Load all member skill assignments for filtering (optimized bulk load)
+   */
+  private async loadMemberSkillsMap(orgId: string): Promise<void> {
+    const map = await this.skillService.getAllMemberSkills(orgId);
+    this.memberSkillsMap.set(map);
+  }
+
+  /**
+   * Clear all filters
+   */
+  clearFilters(): void {
+    this.selectedSkillIds.set([]);
+    this.locationFilter.set('');
+    this.currentSearchTerm.set('');
+  }
+
+  /**
+   * Toggle filter panel visibility
+   */
+  toggleFilters(): void {
+    this.showFilters.set(!this.showFilters());
   }
 
   getEmptyMember(): Partial<Member> {
