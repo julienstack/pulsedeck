@@ -1,5 +1,5 @@
 import { Component, signal, inject } from '@angular/core';
-import { RouterOutlet, RouterModule } from '@angular/router';
+import { Router, NavigationStart, RouterOutlet, RouterModule } from '@angular/router';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { SidebarLeft } from '../sidebar-left/sidebar-left';
 import { SidebarRight } from '../sidebar-right/sidebar-right';
@@ -9,6 +9,7 @@ import { OrganizationService } from '../../shared/services/organization.service'
 import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-main-layout',
@@ -40,12 +41,22 @@ import { TooltipModule } from 'primeng/tooltip';
 export class MainLayout {
   theme = inject(ThemeService);
   orgService = inject(OrganizationService);
+  private router = inject(Router);
 
   leftSidebarVisible = signal(false);
   rightSidebarVisible = signal(false);
 
   /** Desktop: Right sidebar collapsed state (default: expanded) */
   rightSidebarCollapsed = signal(false);
+
+  constructor() {
+    this.router.events.pipe(takeUntilDestroyed()).subscribe(event => {
+      if (event instanceof NavigationStart) {
+        this.leftSidebarVisible.set(false);
+        this.rightSidebarVisible.set(false);
+      }
+    });
+  }
 
   toggleRightSidebar() {
     this.rightSidebarCollapsed.update(v => !v);

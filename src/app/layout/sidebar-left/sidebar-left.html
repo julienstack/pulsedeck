@@ -121,25 +121,24 @@
 
 
         @if (auth.isAdmin()) {
-        <div class="space-y-1">
-            <a routerLink="settings" routerLinkActive="border-linke"
-                class="flex items-center justify-between px-3 py-2 bg-[var(--color-surface-overlay)] rounded-lg border border-[var(--color-border)] hover:border-linke transition-colors cursor-pointer text-sm">
-                <span class="text-[var(--color-text-muted)]">Einstellungen</span>
-                <i class="pi pi-cog text-linke text-sm"></i>
-            </a>
-            <a routerLink="members" routerLinkActive="border-linke"
-                class="flex items-center justify-between px-3 py-2 bg-[var(--color-surface-overlay)] rounded-lg border border-[var(--color-border)] hover:border-teal transition-colors cursor-pointer text-sm">
-                <span class="text-[var(--color-text-muted)]">Mitglieder</span>
-                <i class="pi pi-users text-teal text-sm"></i>
-            </a>
-            @if (isJulien) {
-            <a routerLink="issue-tracker" routerLinkActive="border-amber-500"
-                class="flex items-center justify-between px-3 py-2 bg-[var(--color-surface-overlay)] rounded-lg border border-[var(--color-border)] hover:border-amber-500 transition-colors cursor-pointer text-sm">
-                <span class="text-[var(--color-text-muted)]">Feedback</span>
-                <i class="pi pi-list-check text-amber-500 text-sm"></i>
-            </a>
-            }
-        </div>
+        <a routerLink="settings" routerLinkActive="border-linke"
+            class="flex items-center justify-between px-3 py-2 bg-[var(--color-surface-overlay)] rounded-lg border border-[var(--color-border)] hover:border-linke transition-colors cursor-pointer text-sm">
+            <span class="text-[var(--color-text-muted)]">Einstellungen</span>
+            <i class="pi pi-cog text-linke text-sm"></i>
+        </a>
+        }
+
+        @if (isJulien) {
+        <a routerLink="issue-tracker" routerLinkActive="border-amber-500"
+            class="flex items-center justify-between px-3 py-2 bg-[var(--color-surface-overlay)] rounded-lg border border-[var(--color-border)] hover:border-amber-500 transition-colors cursor-pointer text-sm">
+            <span class="text-[var(--color-text-muted)]">Feedback</span>
+            <i class="pi pi-list-check text-amber-500 text-sm"></i>
+        </a>
+        <a routerLink="audit" routerLinkActive="border-red-500"
+            class="flex items-center justify-between px-3 py-2 bg-[var(--color-surface-overlay)] rounded-lg border border-[var(--color-border)] hover:border-red-500 transition-colors cursor-pointer text-sm">
+            <span class="text-[var(--color-text-muted)]">System Audit</span>
+            <i class="pi pi-shield text-red-500 text-sm"></i>
+        </a>
         }
 
         <!-- User Profile (compact) -->
@@ -150,10 +149,12 @@
                 class="flex items-center gap-2 flex-1 min-w-0 hover:opacity-80 transition-opacity cursor-pointer">
                 <div
                     class="w-8 h-8 rounded-full bg-gradient-to-br from-linke to-linke-dark flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-                    {{ auth.currentMember()?.name?.charAt(0) || auth.user()?.email?.charAt(0)?.toUpperCase() || 'U' }}
+                    {{ auth.currentMember()?.name?.charAt(0) || auth.user()?.email?.charAt(0)?.toUpperCase() || 'U'
+                    }}
                 </div>
                 <div class="flex-1 min-w-0">
-                    <div class="text-xs font-bold text-[var(--color-text)] truncate">{{ auth.currentMember()?.name ||
+                    <div class="text-xs font-bold text-[var(--color-text)] truncate">{{ auth.currentMember()?.name
+                        ||
                         'Benutzer' }}</div>
                     <div class="text-[10px] text-[var(--color-text-muted)] truncate uppercase">{{ auth.userRole() }}
                     </div>

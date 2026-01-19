@@ -17,6 +17,7 @@ import { WikiDoc } from '../../../shared/models/wiki-doc.model';
 import { AuthService } from '../../../shared/services/auth.service';
 import { PermissionsService } from '../../../shared/services/permissions.service';
 import { OnboardingService } from '../../../shared/services/onboarding.service';
+import { WorkingGroupsService } from '../../../shared/services/working-groups.service';
 
 @Component({
   selector: 'app-wiki',
@@ -46,6 +47,7 @@ export class WikiComponent implements OnInit {
   private onboardingService = inject(OnboardingService);
   public auth = inject(AuthService);
   public permissions = inject(PermissionsService);
+  public wgService = inject(WorkingGroupsService);
 
   // Permission-based visibility
   canEdit = this.permissions.canEditWiki;
@@ -79,11 +81,22 @@ export class WikiComponent implements OnInit {
     { label: 'Rechtliches', value: 'Legal' },
   ];
 
-  statusOptions = [
-    { label: 'Veröffentlicht', value: 'Published' },
-    { label: 'Entwurf', value: 'Draft' },
-    { label: 'In Prüfung', value: 'Review' },
-  ];
+  // Permissions for publishing
+  canPublish = signal(false);
+
+  // Status options computed based on permissions (only committee/admin/ag-lead can publish)
+  statusOptions = computed(() => {
+    const isCommittee = this.permissions.isCommittee();
+    const canPub = this.canPublish();
+    const opts = [
+      { label: 'Entwurf', value: 'Draft' },
+      { label: 'In Prüfung', value: 'Review' },
+    ];
+    if (isCommittee || canPub) {
+      opts.unshift({ label: 'Veröffentlicht', value: 'Published' });
+    }
+    return opts;
+  });
 
   visibilityOptions = [
     { label: 'Öffentlich (Alle)', value: 'public' },
@@ -91,6 +104,13 @@ export class WikiComponent implements OnInit {
     { label: 'Nur Vorstand', value: 'committee' },
     { label: 'Nur Admin', value: 'admin' },
   ];
+
+  // AGs where current user is member
+  myAgs = computed(() => {
+    const all = this.wgService.workingGroups();
+    const myIds = this.wgService.myMemberships();
+    return all.filter(g => myIds.has(g.id || ''));
+  });
 
   filteredDocs = computed(() => {
     let docs = this.docs();
@@ -110,7 +130,17 @@ export class WikiComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.wikiService.fetchDocs();
+    const orgId = this.auth.currentOrgId();
+    if (orgId) {
+      this.wikiService.fetchDocs(orgId);
+      this.wgService.fetchWorkingGroups();
+    }
+
+    const member = this.auth.currentMember();
+    if (member?.id) {
+      this.wgService.fetchMyMemberships(member.id);
+    }
+
     // Track wiki visit for onboarding
     this.onboardingService.trackWikiVisit();
   }
@@ -132,7 +162,16 @@ export class WikiComponent implements OnInit {
   /** Get articles for a specific category */
   getDocsByCategory(category: string): WikiDoc[] {
     const term = this.currentSearchTerm().toLowerCase();
-    let docs = this.docs().filter(d => d.category === category);
+    let docs = this.docs();
+
+    if (category.startsWith('AG:')) {
+      const agId = category.split(':')[1];
+      docs = docs.filter(d => d.working_group_id === agId);
+    } else {
+      // Standard categories: only show global docs (no working_group_id)
+      docs = docs.filter(d => d.category === category && !d.working_group_id);
+    }
+
     if (term) {
       docs = docs.filter(
         d =>
@@ -157,6 +196,7 @@ export class WikiComponent implements OnInit {
       author: '',
       category: 'General',
       status: 'Draft',
+      organization_id: this.auth.currentOrgId() || undefined,
       last_updated: new Date().toISOString().split('T')[0],
       allowed_roles: ['public', 'member', 'committee', 'admin']
     };
@@ -164,6 +204,21 @@ export class WikiComponent implements OnInit {
 
   openNew() {
     this.currentDoc = this.getEmptyDoc();
+
+    // Auto-select AG context if active
+    const cat = this.selectedCategory();
+    if (cat && cat.startsWith('AG:')) {
+      const agId = cat.split(':')[1];
+      this.currentDoc.working_group_id = agId;
+
+      // Check AG publish rights
+      const isAgAdmin = this.permissions.isAgAdmin(agId);
+      this.canPublish.set(this.permissions.isCommittee() || isAgAdmin);
+    } else {
+      this.currentDoc.working_group_id = undefined;
+      this.canPublish.set(this.permissions.isCommittee());
+    }
+
     this.tempVisibility = 'public';
     this.editMode.set(false);
     this.dialogVisible.set(true);
@@ -172,12 +227,32 @@ export class WikiComponent implements OnInit {
   editDoc(doc: WikiDoc) {
     this.currentDoc = { ...doc };
     this.tempVisibility = this.getVisibilityFromRoles(doc.allowed_roles);
+
+    // Check rights
+    const isAgAdmin = doc.working_group_id ? this.permissions.isAgAdmin(doc.working_group_id) : false;
+    this.canPublish.set(this.permissions.isCommittee() || isAgAdmin);
+
     this.editMode.set(true);
     this.dialogVisible.set(true);
   }
 
   async saveDoc() {
     if (!this.currentDoc.title || !this.currentDoc.description) return;
+
+    // Security: Check if user is allowed to publish or keep published status
+    const isCommittee = this.permissions.isCommittee();
+    const canPub = this.canPublish(); // Uses cached calculation from open/edit
+    const currentStatus = this.currentDoc.status;
+
+    if (!canPub && currentStatus === 'Published') {
+      // Force change to Review if not allowed
+      this.currentDoc.status = 'Review';
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Zur Prüfung',
+        detail: 'Deine Änderungen müssen genehmigt werden.'
+      });
+    }
 
     this.currentDoc.last_updated = new Date().toISOString().split('T')[0];
     this.currentDoc.allowed_roles = this.getRolesFromVisibility(
@@ -252,7 +327,11 @@ export class WikiComponent implements OnInit {
   }
 
   getCountByCategory(category: string): number {
-    return this.docs().filter((d) => d.category === category).length;
+    if (category.startsWith('AG:')) {
+      const agId = category.split(':')[1];
+      return this.docs().filter(d => d.working_group_id === agId).length;
+    }
+    return this.docs().filter(d => d.category === category && !d.working_group_id).length;
   }
 
   getCategorySeverity(category: string) {
@@ -271,6 +350,11 @@ export class WikiComponent implements OnInit {
   }
 
   getCategoryLabel(category: string): string {
+    if (category?.startsWith('AG:')) {
+      const agId = category.split(':')[1];
+      const ag = this.wgService.workingGroups().find(g => g.id === agId);
+      return ag ? ag.name : 'Unknown AG';
+    }
     const labels: Record<string, string> = {
       General: 'Allgemein',
       Finance: 'Finanzen',

@@ -107,14 +107,32 @@ export class DashboardHome implements OnInit {
     events: CalendarEvent[],
     memberships: Set<string>
   ): void {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const now = new Date();
+    const currentHours = now.getHours();
+    const currentMinutes = now.getMinutes();
+
+    // Construct local YYYY-MM-DD for comparison
+    const day = now.getDate().toString().padStart(2, '0');
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const year = now.getFullYear();
+    const localTodayStr = `${year}-${month}-${day}`;
 
     // Filter future events that belong to my AGs or are general
     this.myUpcomingEvents = events
       .filter(e => {
-        const eventDate = new Date(e.date);
-        if (eventDate < today) return false;
+        // Simple string comparison for dates works for YYYY-MM-DD
+        if (e.date < localTodayStr) return false;
+
+        // If today, check time
+        if (e.date === localTodayStr) {
+          const timeStr = e.end_time || e.start_time;
+          if (timeStr) {
+            const [h, m] = timeStr.split(':').map((x: any) => parseInt(x, 10));
+            if (h < currentHours || (h === currentHours && m < currentMinutes)) {
+              return false;
+            }
+          }
+        }
 
         // Include general events or events from my AGs
         if (!e.working_group_id) return true;

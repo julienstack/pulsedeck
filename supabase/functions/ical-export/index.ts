@@ -91,37 +91,87 @@ Deno.serve(async (req: Request) => {
     }
 
     try {
+        // Use Service Role to bypass RLS and perform manual checks
         const supabaseClient = createClient(
             Deno.env.get("SUPABASE_URL") ?? "",
-            Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-            {
-                global: {
-                    headers: { Authorization: req.headers.get("Authorization") ?? "" },
-                },
-            }
+            Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
         );
 
         // Parse query params
         const url = new URL(req.url);
-        const agId = url.searchParams.get('ag'); // Optional: filter by AG
+        const token = url.searchParams.get('token');
+        let orgId = url.searchParams.get('org');
+        const filterAgId = url.searchParams.get('ag'); // Optional: filter by AG
         const download = url.searchParams.get('download') !== 'false';
 
-        // Build query
+        // Context Data
+        let userRoles = ['public'];
+        let agIds: string[] = [];
+
+        // 1. Authenticate via Token (Preferred) or Fallback to Public/Org
+        if (token) {
+            const { data: member, error } = await supabaseClient
+                .from('members')
+                .select('id, organization_id, app_role')
+                .eq('calendar_token', token)
+                .single();
+
+            if (error || !member) {
+                return new Response("Invalid Calendar Token", { status: 401, headers: corsHeaders });
+            }
+
+            // Identify Org and User Context
+            orgId = member.organization_id;
+            userRoles.push('member');
+            if (member.app_role) {
+                userRoles.push(member.app_role);
+            }
+
+            // Fetch AG memberships for visibility
+            const { data: agMemberships } = await supabaseClient
+                .from('ag_memberships')
+                .select('working_group_id')
+                .eq('member_id', member.id);
+
+            if (agMemberships) {
+                agIds = agMemberships.map(m => m.working_group_id);
+            }
+        } else if (!orgId) {
+            return new Response("Organization ID or Token is required", { status: 400, headers: corsHeaders });
+        }
+
+        // 2. Build Query
         let query = supabaseClient
             .from('events')
             .select('*')
+            .eq('organization_id', orgId)
             .order('date', { ascending: true });
 
-        // Filter by AG if specified
-        if (agId) {
-            query = query.eq('working_group_id', agId);
+        // 3. Apply Filters
+
+        // AG Filter (explicit)
+        if (filterAgId) {
+            query = query.eq('working_group_id', filterAgId);
         }
 
-        // Only future events (or last 30 days)
+        // Time Filter (optimize)
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         query = query.gte('date', thirtyDaysAgo.toISOString().split('T')[0]);
 
+        // 4. Visibility Filter (The Core Logic)
+        // Event is visible if:
+        // (allowed_roles overlaps userRoles) OR (working_group_id IN agIds)
+
+        let visibilityFilter = `allowed_roles.ov.{${userRoles.join(',')}}`;
+        if (agIds.length > 0) {
+            visibilityFilter += `,working_group_id.in.(${agIds.join(',')})`;
+        }
+
+        // Apply OR filter to check visibility
+        query = query.or(visibilityFilter);
+
+        // Execute
         const { data: events, error } = await query;
 
         if (error) {
@@ -130,15 +180,15 @@ Deno.serve(async (req: Request) => {
 
         // Get calendar name
         let calendarName = 'Lexion Kalender';
-        if (agId) {
+        if (filterAgId) {
             const { data: ag } = await supabaseClient
                 .from('working_groups')
                 .select('name')
-                .eq('id', agId)
+                .eq('id', filterAgId)
                 .single();
-            if (ag) {
-                calendarName = `Lexion - ${ag.name}`;
-            }
+            if (ag) calendarName = `Lexion - ${ag.name}`;
+        } else if (orgId) {
+            // Try to fetch org name? Not critical.
         }
 
         // Generate iCal content

@@ -1,7 +1,7 @@
 # 🚀 Lexion Roadmap
 
-> **Letzte Aktualisierung:** 19. Januar 2026  
-> **Aktuelle Version:** Alpha 0.9.0
+> **Letzte Aktualisierung:** 19. Januar 2026 (22:35)  
+> **Aktuelle Version:** Alpha 0.9.2
 
 ---
 
@@ -18,12 +18,7 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 ---
 
 ## 🚧 Aktuell in Arbeit
-
-### 📋 Event-Helfer-Slots (Schichtplan)
-- [ ] Slot-Verwaltung bei Events (Aufbau, Theke, Einlass)
-- [ ] Helfer-Anmeldung pro Slot
-- [ ] Max-Kapazität pro Slot
-- [ ] Skill-Anforderungen pro Slot
+*(Derzeit werden Features aus Phase 2 priorisiert)*
 
 ---
 
@@ -36,8 +31,8 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 | 1 | **Skill-Tagging** | ✅ Fertig | Mitglieder taggen ihre Fähigkeiten |
 | 2 | **Admin-Einstellungen** | ✅ Fertig | Zentraler Admin-Bereich für Skills, Newsletter, Org-Settings |
 | 3 | **Org erstellen** | ✅ Fertig | Eingeloggte User können neue Orgs erstellen |
-| 4 | **Event-Helfer-Slots** | 🚧 In Arbeit | Events mit Schichtplan |
-| 5 | **Admin-Filter** | ⏳ Geplant | Vorstand filtert nach Skills/Ort |
+| 4 | **Event-Helfer-Slots** | ✅ Fertig | Events mit Schichtplan |
+| 5 | **Admin-Filter** | ✅ Fertig | Vorstand filtert nach Skills/Ort |
 
 ### Phase 2: Engagement ⭐⭐
 
@@ -59,6 +54,28 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 
 ## ✅ Abgeschlossen (Patch Notes)
 
+### v0.9.2 – 19. Januar 2026 (Audit & Mobile UX)
+
+**🛡️ Sicherheit & Audit**
+- [x] **System Audit Logs:** Lückenlose Protokollierung aller Änderungen für Super-Admins
+- [x] **Audit Browser:** Neuer Bereich für Logs mit JSON-Diff-Ansicht
+- [x] **Security:** Row Level Security (RLS) policies für sensible Log-Daten
+
+**📱 Mobile & UX**
+- [x] **Smart Navigation:** Sidebar schließt sich automatisch bei Navigation, bleibt bei Interaktion offen
+- [x] **Responsive Footer:** Optimiertes Design für Mobile (Platz freigegeben, Badge integriert)
+- [x] **Feedback Integration:** Bessere Erreichbarkeit über Footer-Buttons auf Mobilgeräten
+
+### v0.9.1 – 19. Januar 2026 (Security & UX Update)
+
+**🔒 Kalender & Sicherheit**
+- [x] **iCal Security:** Personalisierte Token für sichere Kalender-Abos (`?token=...`)
+- [x] **Sichtbarkeit:** Export enthält jetzt alle für den Nutzer sichtbaren Termine (auch interne & AG-Events)
+- [x] **UX:** Abgelaufene Termine von heute werden sofort ausgeblendet
+- [x] **Navigation:** Smarte Zurück-Links im Handbuch/Rechtliches
+
+---
+
 ### v0.9.0 Alpha – 19. Januar 2026
 
 **🐛 Bugfixes & Stabilisierung**
@@ -72,6 +89,10 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 - [x] **Navigation:** Blockierte Desktop-Sidebar im eingeklappten Zustand gefixt
 - [x] **Settings:** Icon-Liste im Admin-Dialog scrollbar gemacht
 - [x] **Profil:** "Fast geschafft"-Meldung verschwindet sofort nach Speichern
+- [x] **Sicherheit:** Wiki & News strikt abgesichert (RLS: "In Prüfung" ist unsichtbar)
+- [x] **Wiki:** Eigene Wiki-Bereiche für Arbeitsgruppen (AGs)
+- [x] **Workflow:** Sicherheitsmechanismus für bearbeitete Live-Artikel (Auto-Reset)
+- [x] **Login:** Intelligenter Auto-Redirect zur letzten Organisation
 
 ---
 

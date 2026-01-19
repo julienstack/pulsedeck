@@ -207,6 +207,17 @@ export class FeedComponent {
             return;
         }
 
+        // Security: Reset to review if editing approved/sent item without permission
+        if (!this.canApprove() &&
+            (this.currentItem.status === 'approved' || this.currentItem.status === 'sent')) {
+            this.currentItem.status = 'review';
+            this.messageService.add({
+                severity: 'info',
+                summary: 'Zur Prüfung',
+                detail: 'Deine Änderungen müssen erneut freigegeben werden.'
+            });
+        }
+
         try {
             const payload = { ...this.currentItem };
             if (this.editMode() && this.currentItem.id) {

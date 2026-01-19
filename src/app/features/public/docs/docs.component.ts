@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -7,6 +7,7 @@ import { marked } from 'marked';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
+import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
     selector: 'app-docs',
@@ -17,14 +18,14 @@ import { TagModule } from 'primeng/tag';
         <!-- Sticky Header with Back Button -->
         <div class="border-b border-[var(--color-border)] bg-[var(--color-surface)]/80 sticky top-0 z-50 backdrop-blur-md">
             <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-                <a routerLink="/" class="flex items-center gap-3 text-[var(--color-text)] hover:opacity-80 transition-opacity no-underline cursor-pointer">
+                <a [routerLink]="backLink()" class="flex items-center gap-3 text-[var(--color-text)] hover:opacity-80 transition-opacity no-underline cursor-pointer">
                     <div class="w-8 h-8 rounded-lg bg-linke/20 flex items-center justify-center">
                         <i class="pi pi-book text-linke text-sm"></i>
                     </div>
                     <span class="font-bold text-lg">Lexion Docs</span>
                 </a>
                 
-                <a routerLink="/" class="px-4 py-2 rounded-lg bg-[var(--color-surface-raised)] border border-[var(--color-border)] hover:bg-[var(--color-surface-overlay)] text-sm font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text)] flex items-center gap-2 transition-all no-underline cursor-pointer">
+                <a [routerLink]="backLink()" class="px-4 py-2 rounded-lg bg-[var(--color-surface-raised)] border border-[var(--color-border)] hover:bg-[var(--color-surface-overlay)] text-sm font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text)] flex items-center gap-2 transition-all no-underline cursor-pointer">
                     <i class="pi pi-arrow-left text-xs"></i>
                     <span>Zurück</span>
                 </a>
@@ -106,7 +107,7 @@ import { TagModule } from 'primeng/tag';
              <div class="mt-12 text-center text-sm text-[var(--color-text-muted)] border-t border-[var(--color-border)] pt-8">
                 <p>Hast du Fragen, die hier nicht beantwortet werden?</p>
                 <div class="flex justify-center gap-4 mt-4">
-                     <a routerLink="/" class="text-linke hover:underline cursor-pointer">Zur Startseite</a>
+                     <a [routerLink]="backLink()" class="text-linke hover:underline cursor-pointer">Zur Startseite</a>
                      <span>•</span>
                      <a href="mailto:support@lexion.app" class="text-linke hover:underline">Support kontaktieren</a>
                 </div>
@@ -127,6 +128,14 @@ export class DocsComponent implements OnInit {
     loading = signal(true);
     error = signal<string | null>(null);
     htmlContent = signal<SafeHtml>('');
+
+    private auth = inject(AuthService);
+
+    backLink = computed(() => {
+        if (!this.auth.user()) return '/';
+        const slug = localStorage.getItem('lastOrgSlug');
+        return slug ? `/${slug}/dashboard` : '/organisationen';
+    });
 
     ngOnInit(): void {
         this.loadDocs();

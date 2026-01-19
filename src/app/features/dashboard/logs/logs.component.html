@@ -1,0 +1,78 @@
+<div class="p-6">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-2xl font-bold mb-1">System Logs</h1>
+            <p class="text-gray-500">Global activity tracking across all organizations.</p>
+        </div>
+        <p-button icon="pi pi-refresh" (onClick)="fetchLogs()" [loading]="loading()" label="Refresh"></p-button>
+    </div>
+
+    <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+        <p-table [value]="logs()" [loading]="loading()" [paginator]="true" [rows]="50" styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="min-width: 150px">Time</th>
+                    <th style="width: 100px">Table</th>
+                    <th style="width: 100px">Action</th>
+                    <th>User / Org</th>
+                    <th>Changes</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-log>
+                <tr class="text-sm">
+                    <td class="whitespace-nowrap align-top pt-3">{{ log.created_at | date:'dd.MM.yyyy HH:mm:ss' }}</td>
+                    <td class="align-top pt-3"><p-tag [value]="log.table_name" severity="secondary"></p-tag></td>
+                    <td class="align-top pt-3"><p-tag [value]="log.operation"
+                            [severity]="getSeverity(log.operation)"></p-tag></td>
+                    <td class="align-top pt-3">
+                        <div class="flex flex-col gap-1">
+                            <span class="font-mono text-xs text-gray-600 dark:text-gray-300 truncate max-w-[150px]"
+                                title="User: {{log.performed_by}}">
+                                👤 {{ log.performed_by?.substring(0,8) }}
+                            </span>
+                            <span class="font-mono text-xs text-gray-500 dark:text-gray-400 truncate max-w-[150px]"
+                                title="Org: {{log.organization_id}}">
+                                🏢 {{ log.organization_id ? log.organization_id.substring(0,8) : '-' }}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="align-top pt-3 pb-3">
+                        <div class="grid grid-cols-2 gap-2 max-w-2xl text-xs font-mono">
+                            <div *ngIf="log.old_data" [class.col-span-2]="!log.new_data"
+                                class="bg-red-50 dark:bg-red-900/20 p-2 rounded overflow-auto max-h-48 border border-red-100 dark:border-red-900/30">
+                                <strong
+                                    class="text-red-700 dark:text-red-400 block mb-1 sticky top-0 bg-red-50 dark:bg-transparent">Before:</strong>
+                                <pre>{{ log.old_data | json }}</pre>
+                            </div>
+                            <!-- If Just New Data (Insert) -->
+                            <div *ngIf="log.new_data && !log.old_data"
+                                class="col-span-2 bg-green-50 dark:bg-green-900/20 p-2 rounded overflow-auto max-h-48 border border-green-100 dark:border-green-900/30">
+                                <strong
+                                    class="text-green-700 dark:text-green-400 block mb-1 sticky top-0 bg-green-50 dark:bg-transparent">New
+                                    Record:</strong>
+                                <pre>{{ log.new_data | json }}</pre>
+                            </div>
+                            <!-- If Update (New Data) -->
+                            <div *ngIf="log.new_data && log.old_data"
+                                class="bg-green-50 dark:bg-green-900/20 p-2 rounded overflow-auto max-h-48 border border-green-100 dark:border-green-900/30">
+                                <strong
+                                    class="text-green-700 dark:text-green-400 block mb-1 sticky top-0 bg-green-50 dark:bg-transparent">After:</strong>
+                                <pre>{{ log.new_data | json }}</pre>
+                            </div>
+                        </div>
+                        <div *ngIf="log.operation === 'DELETE' && !log.old_data && !log.new_data" class="text-red-500">
+                            (Deleted ID: {{log.record_id}}) - No snapshot available
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="5" class="text-center p-8 text-gray-500">
+                        No logs found (or you don't have permission).
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

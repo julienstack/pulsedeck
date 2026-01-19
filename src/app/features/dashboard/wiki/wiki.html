@@ -83,6 +83,54 @@
                 }
             </div>
             }
+
+            <!-- AG Wikis -->
+            @if (myAgs().length > 0) {
+            <div class="border-t border-[var(--color-border)] mt-2 pt-2">
+                <div class="px-2.5 py-1 text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider">
+                    Arbeitsgruppen
+                </div>
+                @for (ag of myAgs(); track ag.id) {
+                <div>
+                    <button (click)="toggleCategory('AG:' + ag.id!)"
+                        [class]="selectedCategory() === 'AG:' + ag.id ? 'bg-[var(--color-surface-raised)] border-l-2 border-l-purple-500 font-medium' : 'border-l-2 border-l-transparent hover:bg-[var(--color-surface-raised)]'"
+                        class="w-full text-left p-2.5 flex items-center justify-between text-sm transition-colors">
+                        <span class="flex items-center gap-2">
+                            <i class="pi pi-users text-[var(--color-text-muted)] text-xs"></i>
+                            <span
+                                [class]="selectedCategory() === 'AG:' + ag.id ? 'text-[var(--color-text)]' : 'text-[var(--color-text-muted)]'">
+                                {{ag.name}}
+                            </span>
+                        </span>
+                        <div class="flex items-center gap-1.5">
+                            <span
+                                class="text-[10px] bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-1.5 py-0.5 rounded-full">{{getCountByCategory('AG:'
+                                +
+                                ag.id!)}}</span>
+                            <i class="pi text-[10px] text-[var(--color-text-muted)]"
+                                [class]="expandedCategories['AG:' + ag.id!] ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
+                        </div>
+                    </button>
+
+                    <!-- Articles in AG -->
+                    @if (expandedCategories['AG:' + ag.id!]) {
+                    <div class="bg-[var(--color-surface-raised)]/30">
+                        @for (doc of getDocsByCategory('AG:' + ag.id!); track doc.id) {
+                        <button (click)="selectArticle(doc)"
+                            [class]="selectedArticle()?.id === doc.id ? 'bg-gray-700/50 text-[var(--color-text)]' : 'text-[var(--color-text-muted)] hover:bg-[var(--color-surface-raised)] hover:text-gray-200'"
+                            class="w-full text-left px-4 py-2 text-xs border-l-2 border-l-transparent transition-colors truncate flex items-center gap-2">
+                            <i class="pi pi-file text-[10px]"></i>
+                            <span class="truncate">{{doc.title}}</span>
+                        </button>
+                        } @empty {
+                        <div class="px-4 py-2 text-xs text-[var(--color-text-muted)] italic">Keine Artikel</div>
+                        }
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+            }
         </div>
     </div>
 
@@ -180,7 +228,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-[var(--color-text)] mb-1">Status</label>
-                <p-select [(ngModel)]="currentDoc.status" [options]="statusOptions" optionLabel="label"
+                <p-select [(ngModel)]="currentDoc.status" [options]="statusOptions()" optionLabel="label"
                     optionValue="value" styleClass="w-full" />
             </div>
         </div>

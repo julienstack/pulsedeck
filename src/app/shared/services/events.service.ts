@@ -1,6 +1,7 @@
 import { Injectable, inject, signal, OnDestroy } from '@angular/core';
 import { SupabaseService } from './supabase';
 import { OrganizationService } from './organization.service';
+import { AuthService } from './auth.service';
 import { CalendarEvent } from '../models/calendar-event.model';
 import { RealtimeChannel } from '@supabase/supabase-js';
 
@@ -14,6 +15,7 @@ import { RealtimeChannel } from '@supabase/supabase-js';
 export class EventsService implements OnDestroy {
     private supabase = inject(SupabaseService);
     private org = inject(OrganizationService);
+    private auth = inject(AuthService);
     private readonly TABLE_NAME = 'events';
     private realtimeChannel: RealtimeChannel | null = null;
 
@@ -145,6 +147,18 @@ export class EventsService implements OnDestroy {
         let url = `${baseUrl}/functions/v1/ical-export`;
 
         const params = new URLSearchParams();
+
+        const member = this.auth.currentMember();
+        if (member?.calendar_token) {
+            params.set('token', member.calendar_token);
+        } else {
+            // Fallback to org ID (public events only)
+            const orgId = this.org.currentOrgId();
+            if (orgId) {
+                params.set('org', orgId);
+            }
+        }
+
         if (agId) {
             params.set('ag', agId);
         }
@@ -160,11 +174,25 @@ export class EventsService implements OnDestroy {
      */
     async downloadICalFile(agId?: string): Promise<void> {
         const baseUrl = this.supabase.getSupabaseUrl();
-        let url = `${baseUrl}/functions/v1/ical-export?download=true`;
+
+        const params = new URLSearchParams();
+        params.set('download', 'true');
+
+        const member = this.auth.currentMember();
+        if (member?.calendar_token) {
+            params.set('token', member.calendar_token);
+        } else {
+            const orgId = this.org.currentOrgId();
+            if (orgId) {
+                params.set('org', orgId);
+            }
+        }
 
         if (agId) {
-            url += `&ag=${agId}`;
+            params.set('ag', agId);
         }
+
+        const url = `${baseUrl}/functions/v1/ical-export?${params.toString()}`;
 
         // Open download in new tab
         window.open(url, '_blank');

@@ -124,7 +124,16 @@ export class SelectOrganizationComponent {
         const orgs = await this.orgService.getMyOrganizations(userId);
         this.organizations.set(orgs);
 
-        // Always show the selection page - don't auto-redirect
+        // Auto-redirect to last organization if available
+        const lastOrgId = localStorage.getItem('last_org_id');
+        const lastOrg = orgs.find((o) => o.id === lastOrgId);
+
+        if (lastOrg) {
+            this.router.navigate(['/', lastOrg.slug, 'dashboard']);
+            return;
+        }
+
+        // Otherwise show the selection page
         this.loading.set(false);
     }
 

@@ -38,6 +38,7 @@ export interface Member {
     city?: string;
     phone?: string;
     birthday?: string;
+    calendar_token?: string;
     created_at?: string;
     updated_at?: string;
 }

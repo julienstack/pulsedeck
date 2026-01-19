@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../shared/services/auth.service';
 
 @Component({
     selector: 'app-datenschutz',
@@ -9,7 +10,7 @@ import { RouterModule } from '@angular/router';
     template: `
         <div class="min-h-screen bg-[var(--color-bg)]">
             <div class="max-w-4xl mx-auto px-6 py-16">
-                <a routerLink="/" class="inline-flex items-center gap-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)] mb-8 transition-colors">
+                <a [routerLink]="backLink()" class="inline-flex items-center gap-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)] mb-8 transition-colors">
                     <i class="pi pi-arrow-left"></i>
                     Zurück zur Startseite
                 </a>
@@ -178,4 +179,11 @@ import { RouterModule } from '@angular/router';
         </div>
     `,
 })
-export class DatenschutzComponent { }
+export class DatenschutzComponent {
+    auth = inject(AuthService);
+    backLink = computed(() => {
+        if (!this.auth.user()) return '/';
+        const slug = localStorage.getItem('lastOrgSlug');
+        return slug ? `/${slug}/dashboard` : '/organisationen';
+    });
+}

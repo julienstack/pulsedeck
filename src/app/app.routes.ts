@@ -96,7 +96,9 @@ export const routes: Routes = [
                     { path: 'profile', loadComponent: () => import('./features/dashboard/profile/profile').then(m => m.ProfileComponent) },
                     { path: 'issue-tracker', canActivate: [issueTrackerGuard], loadComponent: () => import('./features/dashboard/issue-tracker/issue-tracker.component').then(m => m.IssueTrackerComponent) },
                     { path: 'roadmap', loadComponent: () => import('./features/dashboard/roadmap/roadmap.component').then(m => m.RoadmapComponent) },
-                    { path: 'settings', canActivate: [adminGuard], loadComponent: () => import('./features/dashboard/settings/settings').then(m => m.SettingsComponent) }
+                    { path: 'settings', canActivate: [adminGuard], loadComponent: () => import('./features/dashboard/settings/settings').then(m => m.SettingsComponent) },
+                    { path: 'logs', redirectTo: 'audit' }, // Alias
+                    { path: 'audit', loadComponent: () => import('./features/dashboard/logs/logs.component').then(m => m.LogsComponent) }
                 ]
             }
         ]

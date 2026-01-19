@@ -1,7 +1,7 @@
 # 🚀 Lexion Roadmap
 
 > **Letzte Aktualisierung:** 19. Januar 2026  
-> **Aktuelle Version:** Alpha 0.8.0
+> **Aktuelle Version:** Alpha 0.9.0
 
 ---
 
@@ -54,6 +54,18 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 ---
 
 ## ✅ Abgeschlossen (Patch Notes)
+
+### v0.9.0 – 19. Januar 2026
+
+**🛡️ Sicherheit & Audit**
+- [x] **System Audit Logs:** Lückenlose Protokollierung aller Änderungen für Super-Admins
+- [x] **Audit Browser:** Neuer Bereich für Logs mit JSON-Diff-Ansicht
+- [x] **Security:** Row Level Security (RLS) policies für sensible Log-Daten
+
+**📱 Mobile & UX**
+- [x] **Smart Navigation:** Sidebar schließt sich automatisch bei Navigation, bleibt bei Interaktion offen
+- [x] **Responsive Footer:** Optimiertes Design für Mobile (Platz freigegeben, Badge integriert)
+- [x] **Feedback Integration:** Bessere Erreichbarkeit über Footer-Buttons auf Mobilgeräten
 
 ### v0.8.0 – 19. Januar 2026
 

@@ -98,31 +98,50 @@ export class SidebarRight implements OnInit {
       .gte('date', today)
       .order('date', { ascending: true })
       .order('start_time', { ascending: true })
-      .limit(5);
+      .limit(20);
 
     if (data) {
-      const events = data.map(evt => {
-        const isToday = evt.date === today;
-        const dateObj = new Date(evt.date);
-        const formattedDate = dateObj.toLocaleDateString('de-DE', {
-          day: '2-digit',
-          month: 'short',
+      const now = new Date();
+      const currentHours = now.getHours();
+      const currentMinutes = now.getMinutes();
+
+      const events = data
+        .filter(evt => {
+          if (evt.date !== today) return true;
+
+          // Check time for today's events
+          const timeStr = evt.end_time || evt.start_time;
+          if (!timeStr) return true;
+
+          const [h, m] = timeStr.split(':').map((x: string) => parseInt(x, 10));
+          // Filter out if end time (or start time) is in the past
+          if (h < currentHours || (h === currentHours && m < currentMinutes)) {
+            return false;
+          }
+          return true;
+        })
+        .map(evt => {
+          const isToday = evt.date === today;
+          const dateObj = new Date(evt.date);
+          const formattedDate = dateObj.toLocaleDateString('de-DE', {
+            day: '2-digit',
+            month: 'short',
+          });
+
+          // Derive type from working_group_id
+          const isAgEvent = !!evt.working_group_id;
+          const color = isAgEvent ? 'teal' : 'linke';
+          const icon = isAgEvent ? 'pi-users' : 'pi-flag';
+
+          return {
+            title: evt.title,
+            date: isToday ? 'Heute' : formattedDate,
+            time: evt.start_time,
+            icon: icon,
+            color: color,
+          };
         });
-
-        // Derive type from working_group_id
-        const isAgEvent = !!evt.working_group_id;
-        const color = isAgEvent ? 'teal' : 'linke';
-        const icon = isAgEvent ? 'pi-users' : 'pi-flag';
-
-        return {
-          title: evt.title,
-          date: isToday ? 'Heute' : formattedDate,
-          time: evt.start_time,
-          icon: icon,
-          color: color,
-        };
-      });
-      this.upcomingEvents.set(events);
+      this.upcomingEvents.set(events.slice(0, 5));
     }
   }
 

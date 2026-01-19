@@ -23,13 +23,14 @@ export class WikiService implements OnDestroy {
     readonly loading = this._loading.asReadonly();
     readonly error = this._error.asReadonly();
 
-    async fetchDocs(): Promise<void> {
+    async fetchDocs(orgId: string): Promise<void> {
         this._loading.set(true);
         this._error.set(null);
 
         const { data, error } = await this.supabase
             .from(this.TABLE_NAME)
             .select('*')
+            .eq('organization_id', orgId)
             .order('last_updated', { ascending: false });
 
         if (error) {
