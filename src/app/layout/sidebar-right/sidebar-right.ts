@@ -88,29 +88,15 @@ export class SidebarRight implements OnInit {
           month: 'short',
         });
 
-        let color = 'teal';
-        let icon = 'pi-calendar';
-
-        switch (evt.type) {
-          case 'ag':
-            color = 'teal';
-            icon = 'pi-users';
-            break;
-          case 'personal':
-            color = 'violet';
-            icon = 'pi-user';
-            break;
-          case 'general':
-            color = 'linke';
-            icon = 'pi-flag';
-            break;
-        }
+        // Derive type from working_group_id
+        const isAgEvent = !!evt.working_group_id;
+        const color = isAgEvent ? 'teal' : 'linke';
+        const icon = isAgEvent ? 'pi-users' : 'pi-flag';
 
         return {
           title: evt.title,
           date: isToday ? 'Heute' : formattedDate,
           time: evt.start_time,
-          type: evt.type,
           icon: icon,
           color: color,
         };

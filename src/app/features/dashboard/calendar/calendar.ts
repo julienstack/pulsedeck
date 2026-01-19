@@ -16,7 +16,7 @@ import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { EventsService } from '../../../shared/services/events.service';
-import { CalendarEvent } from '../../../shared/models/calendar-event.model';
+import { CalendarEvent, getEventType } from '../../../shared/models/calendar-event.model';
 import { AuthService } from '../../../shared/services/auth.service';
 import { PermissionsService } from '../../../shared/services/permissions.service';
 import { WorkingGroupsService } from '../../../shared/services/working-groups.service';
@@ -86,12 +86,6 @@ export class CalendarComponent implements OnInit {
   eventDate: Date | null = null;
   tempVisibility = 'public';
 
-  typeOptions = [
-    { label: 'Allgemein', value: 'general' },
-    { label: 'Persönlich', value: 'personal' },
-    { label: 'AG', value: 'ag' },
-  ];
-
   visibilityOptions = [
     { label: 'Öffentlich (Alle)', value: 'public' },
     { label: 'Nur Mitglieder', value: 'member' },
@@ -115,7 +109,6 @@ export class CalendarComponent implements OnInit {
       date: new Date().toISOString().split('T')[0],
       start_time: '19:00',
       end_time: null,
-      type: 'general',
       location: '',
       description: null,
       ag_name: null,
@@ -165,8 +158,8 @@ export class CalendarComponent implements OnInit {
       this.currentEvent.allowed_roles = this.getRolesFromVisibility(this.tempVisibility);
     }
 
-    // Set ag_name from selected working group
-    if (this.currentEvent.type === 'ag' && this.currentEvent.working_group_id) {
+    // Set ag_name from selected working group if one is selected
+    if (this.currentEvent.working_group_id) {
       const selectedGroup = this.workingGroups().find(
         g => g.id === this.currentEvent.working_group_id
       );
@@ -174,7 +167,6 @@ export class CalendarComponent implements OnInit {
         this.currentEvent.ag_name = selectedGroup.name;
       }
     } else {
-      this.currentEvent.working_group_id = null;
       this.currentEvent.ag_name = null;
     }
 

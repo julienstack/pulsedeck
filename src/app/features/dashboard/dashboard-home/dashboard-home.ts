@@ -9,7 +9,7 @@ import { EventsService } from '../../../shared/services/events.service';
 import { OnboardingService } from '../../../shared/services/onboarding.service';
 import { StatisticsService } from '../../../shared/services/statistics.service';
 import { OrganizationService } from '../../../shared/services/organization.service';
-import { CalendarEvent } from '../../../shared/models/calendar-event.model';
+import { CalendarEvent, getEventType } from '../../../shared/models/calendar-event.model';
 import { WorkingGroup } from '../../../shared/models/working-group.model';
 
 @Component({
@@ -215,11 +215,10 @@ export class DashboardHome implements OnInit {
    * Get event type icon
    */
   getEventIcon(event: CalendarEvent): string {
-    switch (event.type) {
+    const type = getEventType(event);
+    switch (type) {
       case 'ag':
         return 'pi-users';
-      case 'personal':
-        return 'pi-user';
       default:
         return 'pi-calendar';
     }
@@ -229,11 +228,10 @@ export class DashboardHome implements OnInit {
    * Get event type color
    */
   getEventColor(event: CalendarEvent): string {
-    switch (event.type) {
+    const type = getEventType(event);
+    switch (type) {
       case 'ag':
         return 'teal';
-      case 'personal':
-        return 'violet';
       default:
         return 'linke';
     }

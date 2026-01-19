@@ -43,21 +43,7 @@ Deno.serve(async (req: Request) => {
             );
         }
 
-        // Check if user is admin by checking members table
-        const { data: member } = await supabaseAdmin
-            .from("members")
-            .select("app_role")
-            .eq("user_id", user.id)
-            .single();
-
-        if (!member || member.app_role !== "admin") {
-            return new Response(
-                JSON.stringify({ error: "Unauthorized - Admin access required" }),
-                { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-            );
-        }
-
-        // Get request body
+        // Get request body first to know which organization we're working with
         const { email, memberId, redirectTo } = await req.json();
 
         if (!email || !memberId) {
@@ -67,10 +53,10 @@ Deno.serve(async (req: Request) => {
             );
         }
 
-        // Check if member exists
+        // Check if target member exists and get their organization
         const { data: targetMember, error: memberError } = await supabaseAdmin
             .from("members")
-            .select("*")
+            .select("*, organization:organizations(id, name)")
             .eq("id", memberId)
             .single();
 
@@ -78,6 +64,21 @@ Deno.serve(async (req: Request) => {
             return new Response(
                 JSON.stringify({ error: "Member not found" }),
                 { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+        }
+
+        // Now check if the requesting user is an admin of the target member's organization
+        const { data: adminMember } = await supabaseAdmin
+            .from("members")
+            .select("app_role")
+            .eq("user_id", user.id)
+            .eq("organization_id", targetMember.organization_id)
+            .single();
+
+        if (!adminMember || adminMember.app_role !== "admin") {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized - Admin access required for this organization" }),
+                { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
             );
         }
 

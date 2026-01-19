@@ -87,19 +87,14 @@
 
                         <!-- Type Badge + Actions -->
                         <div class="flex items-center gap-1 flex-shrink-0">
-                            @if (event.type === 'general') {
+                            @if (!event.working_group_id) {
                             <span
-                                class="hidden sm:inline-block px-1.5 py-0.5 rounded bg-teal/20 text-teal text-[10px] font-medium">
+                                class="hidden sm:inline-block px-1.5 py-0.5 rounded bg-linke/20 text-linke text-[10px] font-medium">
                                 Allg.
                             </span>
-                            } @else if (event.type === 'personal') {
+                            } @else {
                             <span
-                                class="hidden sm:inline-block px-1.5 py-0.5 rounded bg-linke-dark/20 text-violet text-[10px] font-medium">
-                                Priv.
-                            </span>
-                            } @else if (event.type === 'ag') {
-                            <span
-                                class="hidden sm:inline-block px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-medium">
+                                class="hidden sm:inline-block px-1.5 py-0.5 rounded bg-teal/20 text-teal text-[10px] font-medium">
                                 AG
                             </span>
                             }
@@ -171,9 +166,10 @@
                 <p-datepicker [(ngModel)]="eventDate" dateFormat="dd.mm.yy" styleClass="w-full" />
             </div>
             <div>
-                <label class="block text-sm font-medium text-[var(--color-text)] mb-1">Typ</label>
-                <p-select [(ngModel)]="currentEvent.type" [options]="typeOptions" optionLabel="label"
-                    optionValue="value" styleClass="w-full" />
+                <label class="block text-sm font-medium text-[var(--color-text)] mb-1">Arbeitsgruppe</label>
+                <p-select [(ngModel)]="currentEvent.working_group_id" [options]="workingGroups()" optionLabel="name"
+                    optionValue="id" placeholder="Keine (Allgemein)" [showClear]="true" styleClass="w-full">
+                </p-select>
             </div>
         </div>
 
@@ -197,14 +193,7 @@
             <label class="block text-sm font-medium text-[var(--color-text)] mb-1">Ort *</label>
             <input pInputText [(ngModel)]="currentEvent.location" class="w-full" placeholder="Vereinsheim" />
         </div>
-        @if (currentEvent.type === 'ag') {
-        <div class="bg-[var(--color-surface-raised)] p-3 rounded-lg border border-[var(--color-border)]">
-            <label class="block text-sm font-medium text-[var(--color-text)] mb-1">Arbeitsgruppe</label>
-            <p-select [(ngModel)]="currentEvent.working_group_id" [options]="workingGroups()" optionLabel="name"
-                optionValue="id" placeholder="AG auswählen..." styleClass="w-full">
-            </p-select>
-        </div>
-        }
+
         <div>
             <label class="block text-sm font-medium text-[var(--color-text)] mb-1">Beschreibung</label>
             <textarea pTextarea [(ngModel)]="currentEvent.description" class="w-full" rows="2"
