@@ -18,7 +18,8 @@
         </header>
 
         <!-- Main Content Scroll Area -->
-        <main class="flex-1 overflow-y-auto p-4 lg:p-8 scroll-smooth flex flex-col">
+        <main class="flex-1 overflow-y-auto p-4 lg:p-8 scroll-smooth flex flex-col"
+            [@workspaceAnimation]="orgService.currentSlug()">
             <div class="flex-1">
                 <router-outlet></router-outlet>
             </div>

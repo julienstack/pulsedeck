@@ -164,10 +164,12 @@ Deno.serve(async (req: Request) => {
         }
 
         // No auth user exists - send invitation
-        const origin = req.headers.get("origin") || "https://lexion.app";
-        const redirectTo = `${origin}/auth/callback`;
+        // IMPORTANT: Always use the production URL for email redirects,
+        // not the origin header (which could be localhost during local dev)
+        const siteUrl = Deno.env.get("SITE_URL") || "https://lexion.app";
+        const redirectTo = `${siteUrl}/auth/callback`;
 
-        console.log(`[send-invitation] Sending invite to: ${normalizedEmail}`);
+        console.log(`[send-invitation] Sending invite to: ${normalizedEmail}, redirect: ${redirectTo}`);
 
         const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(
             normalizedEmail,

@@ -9,6 +9,7 @@ import {
   PermissionsService,
   AG_ROLE_LABELS,
 } from '../../../shared/services/permissions.service';
+import { OrganizationService } from '../../../shared/services/organization.service';
 
 // PrimeNG Imports
 import { TableModule } from 'primeng/table';
@@ -72,6 +73,7 @@ export class WorkingGroupsComponent implements OnInit {
   private messageService = inject(MessageService);
   public auth = inject(AuthService);
   public permissions = inject(PermissionsService);
+  private orgService = inject(OrganizationService);
 
   groups = this.workingGroupsService.workingGroups;
   loading = this.workingGroupsService.loading;
@@ -118,7 +120,16 @@ export class WorkingGroupsComponent implements OnInit {
     { label: 'Signal', value: 'Signal', icon: 'pi pi-send' },
   ];
 
+
   constructor() {
+    // React to organization changes - reload working groups
+    effect(() => {
+      const currentOrg = this.orgService.currentOrgId();
+      if (currentOrg) {
+        this.workingGroupsService.fetchWorkingGroups();
+      }
+    });
+
     // React to Member changes to load memberships
     effect(() => {
       const member = this.auth.currentMember();

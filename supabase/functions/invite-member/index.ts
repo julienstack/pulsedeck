@@ -102,8 +102,12 @@ Deno.serve(async (req: Request) => {
         }
 
         // Invite new user via email
+        // Use SITE_URL env variable to ensure production URL is used in emails
+        const siteUrl = Deno.env.get("SITE_URL") || "https://lexion.app";
+        const finalRedirectTo = redirectTo || `${siteUrl}/auth/callback`;
+
         const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
-            redirectTo: redirectTo || `${req.headers.get("origin")}/auth/callback`,
+            redirectTo: finalRedirectTo,
             data: {
                 member_id: memberId,
                 invited: true,

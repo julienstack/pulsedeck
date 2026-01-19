@@ -73,15 +73,21 @@ export class WorkingGroupsService implements OnDestroy {
             }
         }
 
-        // Fetch upcoming events for all AGs
+        // Fetch upcoming events for all AGs (filtered by org)
         const today = new Date().toISOString().split('T')[0];
-        const { data: events } = await this.supabase
+        let eventQuery = this.supabase
             .from('events')
             .select('*')
             .not('working_group_id', 'is', null)
             .gte('date', today)
             .order('date', { ascending: true })
             .order('start_time', { ascending: true });
+
+        if (orgId) {
+            eventQuery = eventQuery.eq('organization_id', orgId);
+        }
+
+        const { data: events } = await eventQuery;
 
         // Build events map
         const eventsMap = new Map<string, CalendarEvent[]>();
@@ -249,9 +255,12 @@ export class WorkingGroupsService implements OnDestroy {
     async addWorkingGroup(
         wg: Omit<WorkingGroup, 'id' | 'created_at' | 'updated_at'>
     ) {
+        const orgId = this.org.currentOrgId();
+        const wgWithOrg = orgId ? { ...wg, organization_id: orgId } : wg;
+
         const { data, error } = await this.supabase
             .from(this.TABLE_NAME)
-            .insert(wg)
+            .insert(wgWithOrg)
             .select()
             .single();
 

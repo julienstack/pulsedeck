@@ -8,6 +8,7 @@ import { WorkingGroupsService } from '../../../shared/services/working-groups.se
 import { EventsService } from '../../../shared/services/events.service';
 import { OnboardingService } from '../../../shared/services/onboarding.service';
 import { StatisticsService } from '../../../shared/services/statistics.service';
+import { OrganizationService } from '../../../shared/services/organization.service';
 import { CalendarEvent } from '../../../shared/models/calendar-event.model';
 import { WorkingGroup } from '../../../shared/models/working-group.model';
 
@@ -29,12 +30,24 @@ export class DashboardHome implements OnInit {
   eventsService = inject(EventsService);
   onboardingService = inject(OnboardingService);
   statsService = inject(StatisticsService);
+  orgService = inject(OrganizationService);
 
   myWorkingGroups: WorkingGroup[] = [];
   myUpcomingEvents: CalendarEvent[] = [];
   isNewMember = false;
 
+  private lastOrgId: string | null = null;
+
   constructor() {
+    // React to organization changes - reload all data
+    effect(() => {
+      const currentOrgId = this.orgService.currentOrgId();
+      if (currentOrgId && currentOrgId !== this.lastOrgId) {
+        this.lastOrgId = currentOrgId;
+        this.loadAllData();
+      }
+    }, { allowSignalWrites: true });
+
     // React to membership changes
     effect(() => {
       const memberships = this.workingGroupsService.myMemberships();
@@ -61,7 +74,12 @@ export class DashboardHome implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    // Fetch data
+    // Initial load
+    await this.loadAllData();
+  }
+
+  private async loadAllData(): Promise<void> {
+    // Fetch data for current organization
     await Promise.all([
       this.workingGroupsService.fetchWorkingGroups(),
       this.eventsService.fetchEvents(),
