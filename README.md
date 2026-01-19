@@ -87,11 +87,8 @@ npx cap open android
 ## 🤝 Contributing & Support
 
 Lexion ist Open Source, um demokratische Strukturen zu stärken.
-Trag gerne Code bei oder unterstütze uns, damit wir wach bleiben:
-
-<a href="https://buymeacoffee.com/lexion" target="_blank">
-  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="60" width="217">
-</a>
+Lexion ist Open Source, um demokratische Strukturen zu stärken.
+Trag gerne Code bei, melde Bugs oder gib uns Feedback!
 
 ---
 
