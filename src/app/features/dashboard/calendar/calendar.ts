@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, effect } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal, effect } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -15,6 +15,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { RealtimeChannel } from '@supabase/supabase-js';
 import { EventsService } from '../../../shared/services/events.service';
 import { CalendarEvent, getEventType } from '../../../shared/models/calendar-event.model';
 import { AuthService } from '../../../shared/services/auth.service';
@@ -27,6 +28,7 @@ import {
   RegistrationStatus
 } from '../../../shared/services/event-registration.service';
 import { EventSlotService, EventSlot, CreateSlotData } from '../../../shared/services/event-slot.service';
+import { SupabaseService } from '../../../shared/services/supabase';
 
 @Component({
   selector: 'app-calendar',
@@ -53,11 +55,12 @@ import { EventSlotService, EventSlot, CreateSlotData } from '../../../shared/ser
   templateUrl: './calendar.html',
   styleUrl: './calendar.css',
 })
-export class CalendarComponent implements OnInit {
+export class CalendarComponent implements OnInit, OnDestroy {
   private eventsService = inject(EventsService);
   private confirmationService = inject(ConfirmationService);
   private messageService = inject(MessageService);
   private onboardingService = inject(OnboardingService);
+  private supabase = inject(SupabaseService);
   public auth = inject(AuthService);
   public permissions = inject(PermissionsService);
   readonly registrationService = inject(EventRegistrationService);
@@ -86,6 +89,9 @@ export class CalendarComponent implements OnInit {
   eventDate: Date | null = null;
   tempVisibility = 'public';
 
+  // Realtime
+  private subscription: RealtimeChannel | null = null;
+
   visibilityOptions = [
     { label: 'Öffentlich (Alle)', value: 'public' },
     { label: 'Nur Mitglieder', value: 'member' },
@@ -106,12 +112,25 @@ export class CalendarComponent implements OnInit {
         this.loadSocialProof(ids);
       }
     });
+
+    // Automatically load my registrations when member is available
+    effect(() => {
+      if (this.auth.currentMember()) {
+        this.registrationService.fetchMyRegistrations();
+      }
+    });
   }
 
   async loadSocialProof(ids: string[]) {
     // Small debounce/check could be good here, but for Alpha it's fine
     const summaries = await this.registrationService.getRegistrationsSummary(ids);
-    this.participantSummaries.set(summaries);
+    this.participantSummaries.update(prev => {
+      const next = new Map(prev);
+      summaries.forEach((value, key) => {
+        next.set(key, value);
+      });
+      return next;
+    });
   }
 
   getSummary(eventId: string) {
@@ -125,6 +144,55 @@ export class CalendarComponent implements OnInit {
     this.onboardingService.trackCalendarVisit();
     // Load user's registrations
     this.registrationService.fetchMyRegistrations();
+    // Setup Realtime
+    this.setupRealtimeSubscription();
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  private setupRealtimeSubscription() {
+    this.subscription = this.supabase.client.channel('public:event_registrations')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'event_registrations' },
+        (payload) => {
+          this.handleRealtimeUpdate(payload);
+        }
+      )
+      .subscribe();
+  }
+
+  private async handleRealtimeUpdate(payload: any) {
+    const eventId = payload.new?.event_id || payload.old?.event_id;
+    if (!eventId) return;
+
+    // 1. Refresh global registrations if it concerns me
+    if ((payload.new?.member_id === this.auth.currentMember()?.id) ||
+      (payload.old?.member_id === this.auth.currentMember()?.id)) {
+      this.registrationService.fetchMyRegistrations();
+    }
+
+    // 2. Refresh social proof for this event
+    const summaryMap = await this.registrationService.getRegistrationsSummary([eventId]);
+    const newData = summaryMap.get(eventId);
+
+    if (newData) {
+      this.participantSummaries.update(prev => {
+        const next = new Map(prev);
+        next.set(eventId, newData);
+        return next;
+      });
+    }
+
+    // 3. If details dialog is open for this event, refresh the list
+    if (this.participantsDialogVisible() && this.selectedEventForParticipants()?.id === eventId) {
+      const regs = await this.registrationService.getEventRegistrations(eventId);
+      this.participants.set(regs);
+    }
   }
 
   getEmptyEvent(): Partial<CalendarEvent> {
@@ -291,6 +359,8 @@ export class CalendarComponent implements OnInit {
     if (!event.id) return;
 
     try {
+      // Ensure we have the latest status before toggling
+      await this.registrationService.fetchMyRegistrations();
       const currentStatus = this.getMyRegistration(event.id);
 
       if (currentStatus === 'confirmed') {
@@ -308,6 +378,8 @@ export class CalendarComponent implements OnInit {
           detail: `Du hast dich für "${event.title}" angemeldet!`,
         });
       }
+      // Update participants list immediately
+      this.loadSocialProof([event.id]);
     } catch (e) {
       this.messageService.add({
         severity: 'error',
