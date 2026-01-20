@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, effect } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -93,6 +93,30 @@ export class CalendarComponent implements OnInit {
     { label: 'Nur Admin', value: 'admin' },
     { label: 'Nur AG-Mitglieder', value: 'ag-only' },
   ];
+
+  // Social Proof / Attendees
+  participantSummaries = signal<Map<string, { count: number, avatars: any[] }>>(new Map());
+
+  constructor() {
+    effect(() => {
+      const currentEvents = this.events();
+      if (currentEvents.length > 0) {
+        const ids = currentEvents.map(e => e.id).filter(id => !!id) as string[];
+        // Load social proof data (avatars)
+        this.loadSocialProof(ids);
+      }
+    });
+  }
+
+  async loadSocialProof(ids: string[]) {
+    // Small debounce/check could be good here, but for Alpha it's fine
+    const summaries = await this.registrationService.getRegistrationsSummary(ids);
+    this.participantSummaries.set(summaries);
+  }
+
+  getSummary(eventId: string) {
+    return this.participantSummaries().get(eventId) || { count: 0, avatars: [] };
+  }
 
   ngOnInit(): void {
     this.eventsService.fetchEvents();
@@ -370,6 +394,17 @@ export class CalendarComponent implements OnInit {
         summary: 'Fehler',
         detail: 'Link konnte nicht kopiert werden.',
       });
+    }
+  }
+
+  async copyEventLink(event: CalendarEvent) {
+    if (!event.id) return;
+    const url = `${window.location.origin}/event/${event.id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      this.messageService.add({ severity: 'success', summary: 'Kopiert', detail: 'Event-Link kopiert!' });
+    } catch (e) {
+      this.messageService.add({ severity: 'error', summary: 'Fehler', detail: 'Konnte Link nicht kopieren.' });
     }
   }
 

@@ -111,6 +111,13 @@
                                     [class]="getMyRegistration(event.id!) === 'confirmed' ? 'pi-check' : 'pi-user-plus'"></i>
                             </button>
 
+                            <!-- Share Button -->
+                            <button (click)="copyEventLink(event); $event.stopPropagation()"
+                                class="w-7 h-7 rounded-full flex items-center justify-center text-[var(--color-text-muted)] hover:text-linke hover:bg-linke/10 transition-colors"
+                                pTooltip="Link teilen" tooltipPosition="top">
+                                <i class="pi pi-share-alt text-xs"></i>
+                            </button>
+
                             <!-- Participants Button -->
                             <button (click)="openParticipantsDialog(event); $event.stopPropagation()"
                                 class="w-7 h-7 rounded-full flex items-center justify-center text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-overlay)] transition-colors"
@@ -142,6 +149,30 @@
                     @if (event.description) {
                     <p class="text-xs text-[var(--color-text-muted)] mt-1.5 line-clamp-1 md:line-clamp-2">{{
                         event.description }}</p>
+                    }
+
+                    <!-- Social Proof / Attendees -->
+                    @if (getSummary(event.id!).count > 0) {
+                    <div class="flex items-center gap-2 mt-2.5 cursor-pointer hover:opacity-80 transition-opacity w-fit"
+                        (click)="openParticipantsDialog(event); $event.stopPropagation()">
+                        <div class="flex -space-x-1.5">
+                            @for (user of getSummary(event.id!).avatars; track $index) {
+                            @if (user.avatar_url) {
+                            <img [src]="user.avatar_url"
+                                class="w-5 h-5 rounded-full border border-[var(--color-surface-raised)] bg-[var(--color-surface-raised)] object-cover"
+                                [title]="user.name">
+                            } @else {
+                            <div class="w-5 h-5 rounded-full border border-[var(--color-surface-raised)] flex items-center justify-center text-[8px] font-bold text-white shadow-sm"
+                                [style.background-color]="getAvatarColor(user.name)" [title]="user.name">
+                                {{ getInitials(user.name) }}
+                            </div>
+                            }
+                            }
+                        </div>
+                        <span class="text-xs text-[var(--color-text-muted)] font-medium">
+                            {{ getSummary(event.id!).count }} dabei
+                        </span>
+                    </div>
                     }
                 </div>
             </div>

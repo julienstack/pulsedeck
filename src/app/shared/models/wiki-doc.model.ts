@@ -3,7 +3,7 @@
  */
 export interface WikiDoc {
     id?: string;
-    organization_id?: string;
+    organization_id: string;
     working_group_id?: string;
     title: string;
     description: string;

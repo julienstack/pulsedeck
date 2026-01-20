@@ -1,7 +1,7 @@
 # 🚀 Lexion Roadmap
 
-> **Letzte Aktualisierung:** 19. Januar 2026  
-> **Aktuelle Version:** Alpha 0.9.0
+> **Letzte Aktualisierung:** 20. Januar 2026  
+> **Aktuelle Version:** Alpha 0.9.1
 
 ---
 
@@ -54,6 +54,13 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 ---
 
 ## ✅ Abgeschlossen (Patch Notes)
+
+### v0.9.1 – 20. Januar 2026
+
+**🐛 Bugfixes & Stability**
+- [x] **Wiki Critical Fix:** Absturz beim Laden behoben (fehlende `organization_id` Spalte)
+- [x] **Multi-Tenancy:** Wiki-Artikel sind nun korrekt Mandanten-fähig (`organization_id`, `working_group_id`)
+- [x] **Daten-Integrität:** DB-Migration für striktere Wiki-Constraints angewendet
 
 ### v0.9.0 – 19. Januar 2026
 

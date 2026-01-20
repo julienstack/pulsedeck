@@ -163,4 +163,42 @@ export class EventRegistrationService {
         };
         return labels[status];
     }
+    /**
+     * Get confirmed registrations for multiple events (for list view bubbles)
+     */
+    async getRegistrationsSummary(eventIds: string[]): Promise<Map<string, { count: number, avatars: { name: string, avatar_url?: string }[] }>> {
+        if (!eventIds.length) return new Map();
+
+        const { data, error } = await this.supabase.client
+            .from('event_registrations')
+            .select(`
+                event_id,
+                member:members(name, avatar_url)
+            `)
+            .in('event_id', eventIds)
+            .eq('status', 'confirmed')
+            .order('registered_at', { ascending: true });
+
+        if (error) {
+            console.error('Error loading summaries:', error);
+            return new Map();
+        }
+
+        const map = new Map<string, { count: number, avatars: any[] }>();
+
+        // Initialize
+        eventIds.forEach(id => map.set(id, { count: 0, avatars: [] }));
+
+        data?.forEach((row: any) => {
+            const entry = map.get(row.event_id);
+            if (entry) {
+                entry.count++;
+                if (entry.avatars.length < 5) {
+                    entry.avatars.push(row.member);
+                }
+            }
+        });
+
+        return map;
+    }
 }

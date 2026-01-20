@@ -33,26 +33,33 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 | 3 | **Org erstellen** | ✅ Fertig | Eingeloggte User können neue Orgs erstellen |
 | 4 | **Event-Helfer-Slots** | ✅ Fertig | Events mit Schichtplan |
 | 5 | **Admin-Filter** | ✅ Fertig | Vorstand filtert nach Skills/Ort |
-
-### Phase 2: Engagement ⭐⭐
-
-| # | Feature | Status | Beschreibung |
-|---|---------|--------|--------------|
-| 6 | **Push-Notifications** | ⏳ Geplant | Zielgruppen-Push ("Hilfe morgen benötigt") |
-| 7 | **Mikro-Umfragen** | ⏳ Geplant | Schnelle 2-Klick Abstimmungen im Feed |
-| 8 | **Teilnehmerlisten** | ⏳ Geplant | Social Proof: "Max und Julia sind dabei" |
-| 9 | **One-Click Teilnahme** | ⏳ Geplant | "Ich bin dabei" Button ohne Formular |
-
-### Phase 3: Community ⭐
+### Phase 2: Engagement & Wachstum ⭐⭐
 
 | # | Feature | Status | Beschreibung |
 |---|---------|--------|--------------|
-| 10 | **Biete/Suche Brett** | ⏳ Geplant | Mitfahrgelegenheiten, Hilfsanfragen |
+| 6 | **Teilnehmerlisten** | ✅ Fertig | "Wer kommt?" sichtbar machen (Social Proof) |
+| 7 | **Öffentliche Events** | ✅ Fertig | Shareable Links für WhatsApp (ohne Login lesbar) |
+| 8 | **Einfache Umfragen** | ⏳ Geplant | Abstimmungen im Feed ("Terminfindung") |
+
+### Phase 3: Profi-Features ⭐
+
+| # | Feature | Status | Beschreibung |
+|---|---------|--------|--------------|
+| 9 | **Push-Notifications** | ⏸️ Später | Native Mobile Notifications (technisch aufwendig) |
+| 10 | **Biete/Suche Brett** | ⏳ Geplant | Marktplatz für Hilfe/Ressourcen |
 | 11 | **Auto-Danke System** | ⏳ Geplant | Automatische Wertschätzung nach Events |
 
 ---
 
 ## ✅ Abgeschlossen (Patch Notes)
+
+### v0.9.3 – 19. Januar 2026 (Growth Update)
+
+**🚀 Wachstum & Viralität**
+- [x] **Social Proof:** Teilnehmer-Bilder direkt in der Terminübersicht sichtbar ("Max und 3 weitere...")
+- [x] **Event Sharing:** Neuer "Teilen"-Button für Events
+- [x] **Public Event Pages:** Schicke Landingpages für Events, die auch ohne Login funktionieren (für WhatsApp-Einladungen)
+- [x] **Performance:** Intelligentes Nachladen von Teilnehmerdaten
 
 ### v0.9.2 – 19. Januar 2026 (Audit & Mobile UX)
 

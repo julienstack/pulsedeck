@@ -69,6 +69,12 @@ export const routes: Routes = [
         pathMatch: 'full'
     },
 
+    // Public Event Details
+    {
+        path: 'event/:id',
+        loadComponent: () => import('./features/public/event-details/event-details.component').then(m => m.EventDetailsComponent)
+    },
+
     // Organization Routes (/:slug/...)
     {
         path: ':slug',

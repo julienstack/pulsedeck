@@ -197,4 +197,26 @@ export class EventsService implements OnDestroy {
         // Open download in new tab
         window.open(url, '_blank');
     }
+
+    /**
+     * Get a single event by ID (public access allowed if RLS permits)
+     */
+    async getEventById(id: string): Promise<CalendarEvent & { organization?: { name: string, slug: string, theme_color: string, logo_url: string } }> {
+        const { data, error } = await this.supabase
+            .from(this.TABLE_NAME)
+            .select(`
+                *,
+                organization:organizations (
+                    name,
+                    slug,
+                    theme_color,
+                    logo_url
+                )
+            `)
+            .eq('id', id)
+            .single();
+
+        if (error) throw new Error(error.message);
+        return data as any;
+    }
 }
