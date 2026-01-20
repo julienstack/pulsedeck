@@ -95,20 +95,7 @@ import { AuthService } from '../../../shared/services/auth.service';
                             }
                         </div>
 
-                        <!-- Info Box -->
-                        <div class="bg-[var(--color-surface-ground)] rounded-lg p-4 border border-[var(--color-border)]">
-                            <div class="flex items-start gap-3">
-                                <i class="pi pi-info-circle text-linke mt-0.5"></i>
-                                <div class="text-sm text-[var(--color-text-muted)]">
-                                    <p class="font-medium text-[var(--color-text)] mb-1">Was passiert dann?</p>
-                                    <ul class="space-y-1">
-                                        <li>• Du wirst automatisch Admin</li>
-                                        <li>• Du kannst Mitglieder einladen</li>
-                                        <li>• Kostenlos bis 10 Mitglieder</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+
 
                         <!-- Submit Button -->
                         <p-button 

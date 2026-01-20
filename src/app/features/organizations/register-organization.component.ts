@@ -135,20 +135,7 @@ import { SupabaseService } from '../../shared/services/supabase';
                     </div>
                     }
 
-                    <!-- Free Tier Info -->
-                    <div class="mt-6 pt-4 border-t border-[var(--color-border)]">
-                        <div class="flex items-center gap-3 text-sm">
-                            <div class="w-10 h-10 rounded-lg bg-teal/10 flex items-center justify-center flex-shrink-0">
-                                <i class="pi pi-gift text-teal"></i>
-                            </div>
-                            <div>
-                                <p class="text-[var(--color-text)] font-medium">Kostenlos starten</p>
-                                <p class="text-[var(--color-text-muted)] text-xs">
-                                    Bis 10 Mitglieder gratis, danach 2€/Mitglied/Monat
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
 
                 <!-- Back Link -->

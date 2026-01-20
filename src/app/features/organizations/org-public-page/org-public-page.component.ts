@@ -75,427 +75,259 @@ type LoginStep = 'email' | 'password' | 'invitation-sent' | 'not-found';
         DialogModule,
     ],
     template: `
-        <div class="min-h-screen bg-[var(--color-bg)] font-sans selection:bg-[var(--linke-rot)] selection:text-white pb-20">
+        <div class="min-h-screen bg-[var(--color-bg)] font-sans pb-10">
             <!-- Loading State -->
             @if (loading()) {
             <div class="fixed inset-0 flex items-center justify-center bg-[var(--color-bg)] z-50">
                 <div class="flex flex-col items-center gap-4">
-                    <p-progressSpinner ariaLabel="loading" />
-                    <span class="text-[var(--color-text-muted)] animate-pulse">Lade Organisation...</span>
+                    <p-progressSpinner ariaLabel="loading" styleClass="w-12 h-12" strokeWidth="4" />
                 </div>
             </div>
             }
 
             @if (org()) {
             
-            <!-- Hero Section with Animated Background -->
-            <section class="relative min-h-[85vh] flex flex-col justify-center items-center overflow-hidden pb-16">
-                <!-- Dynamic Background -->
-                <div class="absolute inset-0 z-0">
-                    <div class="absolute inset-0 bg-[var(--color-surface-ground)]"></div>
-                    <div class="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full opacity-20 blur-[100px] animate-blob"
-                        [style.background]="primaryColor"></div>
-                    <div class="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full opacity-20 blur-[100px] animate-blob animation-delay-2000"
-                        [style.background]="'var(--teal-500)'"></div>
-                    
-                    <!-- Grid Pattern Overlay -->
-                    <div class="absolute inset-0 opacity-[0.03]" 
-                        style="background-image: radial-gradient(var(--color-text) 1px, transparent 1px); background-size: 30px 30px;">
-                    </div>
-                </div>
-
-                <div class="relative z-10 max-w-5xl mx-auto px-6 text-center pt-20 flex-1 flex flex-col justify-center">
-                    <!-- Logo Badge -->
-                    <div class="inline-flex items-center justify-center p-4 mb-8 bg-[var(--color-surface-card)]/80 backdrop-blur-xl border border-[var(--color-border)] rounded-3xl shadow-2xl animate-fadein-up">
+            <!-- Sticky Header -->
+            <header class="sticky top-0 z-40 bg-[var(--color-surface-card)]/80 backdrop-blur-xl border-b border-[var(--color-border)] px-4 py-3 mb-6 supports-[backdrop-filter]:bg-[var(--color-surface-card)]/60">
+                <div class="max-w-7xl mx-auto flex items-center justify-between">
+                    <div class="flex items-center gap-3">
                         @if (org()!.logo_url) {
-                        <img [src]="org()!.logo_url" alt="" class="h-16 md:h-20 w-auto object-contain" />
-                        } @else {
-                        <i class="pi pi-building text-4xl md:text-5xl" [style.color]="primaryColor"></i>
+                        <img [src]="org()!.logo_url" alt="Logo" class="w-8 h-8 object-contain" />
                         }
+                        <span class="font-bold text-lg text-[var(--color-text)] tracking-tight">{{ org()!.name }}</span>
                     </div>
-
-                    <h1 class="text-4xl md:text-7xl font-extrabold text-[var(--color-text)] tracking-tight mb-6 leading-tight animate-fadein-up animation-delay-100">
-                        Willkommen bei <br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-text)] to-[var(--color-text-muted)]">
-                            {{ org()!.name }}
-                        </span>
-                    </h1>
-
-                    @if (org()!.description) {
-                    <p class="text-lg md:text-2xl text-[var(--color-text-muted)] max-w-3xl mx-auto leading-relaxed mb-10 animate-fadein-up animation-delay-200 line-clamp-3">
-                         {{ org()!.description }}
-                    </p>
-                    }
-
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fadein-up animation-delay-300">
-                        <button (click)="showLoginDialog = true"
-                            class="px-8 py-4 rounded-xl font-bold text-lg text-white transition-all hover:scale-105 shadow-[0_0_40px_-10px_rgba(0,0,0,0.3)] hover:shadow-[0_0_60px_-10px_rgba(0,0,0,0.4)] flex items-center gap-3"
-                            [style.background]="primaryColor">
-                            <i class="pi pi-sign-in"></i>
-                            Mitglieder Login
-                        </button>
+                    <div class="flex items-center gap-3">
+                        <a routerLink="/" class="text-sm font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors flex items-center gap-2 mr-2">
+                             <i class="pi pi-arrow-left text-xs"></i> Lexion
+                        </a>
+                        <button pButton label="Login" icon="pi pi-sign-in" (click)="navigateToLogin()" size="small" [style]="{background: primaryColor, border: 'none', borderRadius: '12px'}" class="px-4 font-bold md:hidden"></button>
                     </div>
                 </div>
+            </header>
 
-                <!-- Quick Events Ticker (New Feature) -->
-                @if (upcomingEvents().length > 0) {
-                <div class="relative z-20 w-full max-w-6xl mx-auto px-4 mt-auto animate-fadein-up animation-delay-500">
-                    <div class="bg-[var(--color-surface-card)]/90 backdrop-blur-md border border-[var(--color-border)] rounded-2xl p-4 shadow-xl flex flex-col md:flex-row items-center gap-6">
-                        <div class="flex items-center gap-2 text-teal font-bold whitespace-nowrap">
-                            <i class="pi pi-calendar animate-pulse"></i>
-                            <span class="uppercase tracking-wider text-xs">Nächste Termine:</span>
-                        </div>
-                        <div class="flex-1 w-full overflow-hidden">
-                            <div class="flex gap-6 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
-                                @for (event of upcomingEvents().slice(0, 3); track event.id) {
-                                <div class="flex items-center gap-3 min-w-fit pr-4 border-r last:border-0 border-[var(--color-border)]">
-                                    <div class="flex flex-col items-center leading-none">
-                                        <span class="text-xs font-bold text-[var(--color-text-muted)]">{{ formatMonth(event.date) }}</span>
-                                        <span class="text-lg font-bold text-[var(--color-text)]">{{ formatDayShort(event.date) }}</span>
-                                    </div>
-                                    <div>
-                                        <div class="font-bold text-sm text-[var(--color-text)] truncate max-w-[150px]">{{ event.title }}</div>
-                                        <div class="text-xs text-[var(--color-text-muted)]">{{ event.time_start }} Uhr @if(event.location){ • {{ event.location }} }</div>
-                                    </div>
+            <!-- Dashboard Grid -->
+            <main class="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fadein">
+                
+                <!-- LEFT COLUMN: Profile & Contacts & Events -->
+                <div class="lg:col-span-3 space-y-6">
+                    <!-- Org Card -->
+                    <div class="p-6 rounded-2xl bg-[var(--color-surface-card)] border border-[var(--color-border)] shadow-sm text-center relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--color-primary)] to-transparent opacity-50" [style.backgroundColor]="primaryColor"></div>
+                        
+                        <div class="flex justify-center mb-4 mt-2">
+                             @if (org()!.logo_url) {
+                                <img [src]="org()!.logo_url" class="h-24 w-auto object-contain drop-shadow-xl" />
+                             } @else {
+                                <div class="w-20 h-20 rounded-2xl bg-[var(--color-surface-ground)] flex items-center justify-center">
+                                    <i class="pi pi-building text-3xl text-[var(--color-text-muted)]" [style.color]="primaryColor"></i>
                                 </div>
-                                }
-                            </div>
+                             }
                         </div>
-                        <button (click)="showLoginDialog = true" class="hidden md:flex items-center justify-center w-8 h-8 rounded-full bg-[var(--color-surface-ground)] hover:bg-[var(--color-surface-overlay)] transition-colors text-[var(--color-text-muted)] hover:text-teal">
-                            <i class="pi pi-arrow-right text-xs"></i>
-                        </button>
-                    </div>
-                </div>
-                }
-            </section>
-
-            <!-- Working Groups & Todos (Renamed to "Mitmach-Möglichkeiten") -->
-            @if (workingGroups().length > 0) {
-            <section class="py-24 px-6 bg-[var(--color-surface-card)] relative overflow-hidden">
-                 <div class="max-w-7xl mx-auto relative z-10">
-                    <div class="text-center mb-16">
-                        <span class="text-violet font-bold tracking-wider uppercase text-sm mb-2 block animate-pulse">Hier kannst du anfangen</span>
-                        <h2 class="text-3xl md:text-5xl font-bold text-[var(--color-text)]">Mach mit! (AGs & Projekte)</h2>
-                        <p class="text-[var(--color-text-muted)] mt-4 max-w-2xl mx-auto">
-                            Wir suchen immer engagierte Mitglieder. Schau dir unsere Arbeitsgruppen an oder melde dich direkt.
-                        </p>
-                    </div>
-
-                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        @for (wg of workingGroups(); track wg.id) {
-                        <div class="p-8 rounded-3xl bg-[var(--color-surface-ground)] border border-[var(--color-border)] hover:border-violet/50 transition-all hover:shadow-lg group flex flex-col">
-                            <div class="flex justify-between items-start mb-6">
-                                <div class="w-14 h-14 rounded-2xl bg-violet/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                    <i class="pi pi-briefcase text-2xl text-violet"></i>
-                                </div>
-                                <span class="px-2 py-1 rounded-md bg-violet/5 text-violet text-xs font-bold uppercase tracking-wider">Aktiv</span>
-                            </div>
-                            
-                            <h3 class="font-bold text-xl text-[var(--color-text)] mb-3">{{ wg.name }}</h3>
-                            @if (wg.description) {
-                            <p class="text-[var(--color-text-muted)] text-sm leading-relaxed mb-6">{{ wg.description }}</p>
-                            }
-                            
-                            <div class="mt-auto pt-6 border-t border-[var(--color-border)]/50">
-                                <button (click)="showLoginDialog = true" class="w-full py-2 rounded-lg border border-[var(--color-border)] hover:border-violet text-sm font-bold text-[var(--color-text-muted)] hover:text-violet transition-colors flex items-center justify-center gap-2">
-                                    <i class="pi pi-plus"></i>
-                                    Mitmachen
-                                </button>
-                            </div>
-                        </div>
+                        
+                        <h1 class="text-xl font-bold text-[var(--color-text)] mb-2">{{ org()!.name }}</h1>
+                        
+                        @if (org()!.description) {
+                            <p class="text-sm text-[var(--color-text-muted)] leading-relaxed mb-6">{{ org()!.description }}</p>
                         }
+
+                        <div class="pt-4 border-t border-[var(--color-border)] flex justify-between items-center text-sm">
+                            <span class="text-[var(--color-text-muted)]">Mitglieder</span>
+                            <span class="font-bold bg-[var(--color-surface-ground)] px-2 py-1 rounded-md">{{ memberCount() }}</span>
+                        </div>
                     </div>
-                </div>
-            </section>
-            }
-            
-            <!-- Unified Content Grid (Wiki, Feed, Contacts) -->
-            <section class="py-24 px-6">
-                <div class="max-w-7xl mx-auto grid lg:grid-cols-3 gap-8">
-                    
-                    <!-- Col 1: Contacts (New!) -->
+
+                    <!-- Contacts Widget -->
                     @if (contacts().length > 0) {
-                    <div class="lg:col-span-1 space-y-8">
-                        <div>
-                            <span class="text-[var(--color-text-muted)] uppercase tracking-widest text-xs font-bold mb-4 block">Ansprechpartner</span>
-                            <h2 class="text-2xl font-bold text-[var(--color-text)] mb-6">Kontakt</h2>
-                            
-                            <div class="space-y-4">
-                                @for (contact of contacts(); track contact.id) {
-                                <div class="flex items-center gap-4 p-4 rounded-2xl bg-[var(--color-surface-card)] border border-[var(--color-border)] hover:border-[var(--color-text-muted)] transition-colors">
-                                    @if (contact.image_url) {
-                                    <img [src]="contact.image_url" class="w-12 h-12 rounded-full object-cover" alt="">
-                                    } @else {
-                                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[var(--color-surface-raised)] to-[var(--color-surface-overlay)] border border-[var(--color-border)] flex items-center justify-center text-[var(--color-text)] font-bold">
-                                        {{ contact.name.charAt(0) }}
-                                    </div>
-                                    }
+                    <div class="p-5 rounded-2xl bg-[var(--color-surface-card)] border border-[var(--color-border)] shadow-sm">
+                        <h3 class="font-bold mb-4 flex items-center gap-2 text-sm uppercase tracking-wider text-[var(--color-text-muted)]">
+                            <i class="pi pi-users"></i> Ansprechpartner
+                        </h3>
+                        <div class="space-y-4">
+                            @for (c of contacts(); track c.id) {
+                                <div class="flex items-center gap-3 group cursor-default">
+                                    <img [src]="c.image_url || 'https://www.gravatar.com/avatar?d=mp'" class="w-10 h-10 rounded-full bg-[var(--color-surface-ground)] object-cover border border-[var(--color-border)]" />
                                     <div class="flex-1 min-w-0">
-                                        <div class="font-bold text-[var(--color-text)] truncate">{{ contact.name }}</div>
-                                        <div class="text-xs text-linke truncate font-medium">{{ contact.role }}</div>
-                                        @if (contact.email) {
-                                        <div class="text-xs text-[var(--color-text-muted)] truncate mt-0.5 opacity-80">{{ contact.email }}</div>
-                                        }
+                                        <div class="font-bold text-sm truncate text-[var(--color-text)]">{{ c.name }}</div>
+                                        <div class="text-xs text-[var(--color-text-muted)] truncate">{{ c.role }}</div>
                                     </div>
+                                    @if(c.email) {
+                                        <a [href]="'mailto:' + c.email" class="w-8 h-8 flex items-center justify-center rounded-full bg-[var(--color-surface-ground)] hover:bg-[var(--color-primary)] hover:text-white transition-colors text-[var(--color-text-muted)]">
+                                            <i class="pi pi-envelope text-xs"></i>
+                                        </a>
+                                    }
                                 </div>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                    }
-
-                    <!-- Col 2: News Feed -->
-                    @if (feedItems().length > 0) {
-                    <div class="lg:col-span-1">
-                        <span class="text-[var(--color-text-muted)] uppercase tracking-widest text-xs font-bold mb-4 block">Updates</span>
-                        <h2 class="text-2xl font-bold text-[var(--color-text)] mb-6">Aktuelles</h2>
-                        
-                        <div class="space-y-6">
-                            @for (item of feedItems(); track item.id) {
-                            <div class="relative pl-6 border-l-2 border-[var(--color-border)] hover:border-cyan-500 transition-colors pb-6 last:pb-0">
-                                <div class="absolute -left-[5px] top-0 w-2 h-2 rounded-full bg-[var(--color-border)]"></div>
-                                <span class="text-xs font-bold text-cyan-500 block mb-1">{{ formatDate(item.created_at) }}</span>
-                                <h3 class="font-bold text-[var(--color-text)] text-lg mb-2 leading-tight hover:text-cyan-500 transition-colors cursor-pointer" (click)="showLoginDialog = true">{{ item.title }}</h3>
-                                <p class="text-sm text-[var(--color-text-muted)] line-clamp-2">{{ stripHtml(item.content) }}</p>
-                            </div>
                             }
                         </div>
                     </div>
                     }
-                    
-                    <!-- Col 3: Wiki -->
-                    @if (wikiArticles().length > 0) {
-                    <div class="lg:col-span-1">
-                        <span class="text-[var(--color-text-muted)] uppercase tracking-widest text-xs font-bold mb-4 block">Wissen</span>
-                        <h2 class="text-2xl font-bold text-[var(--color-text)] mb-6">Wiki & Docs</h2>
+
+                    <!-- Upcoming Events (in Sidebar) -->
+                    <div class="p-5 rounded-2xl bg-[var(--color-surface-card)] border border-[var(--color-border)] shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold flex items-center gap-2 text-sm uppercase tracking-wider text-[var(--color-text-muted)]">
+                                <i class="pi pi-calendar text-teal-500"></i> Termine
+                            </h3>
+                            <button (click)="navigateToLogin()" class="text-xs font-bold text-teal-500 hover:underline">Alle</button>
+                        </div>
                         
-                        <div class="grid gap-3">
-                            @for (article of wikiArticles(); track article.id) {
-                            <div class="group p-4 rounded-xl bg-[var(--color-surface-card)] border border-[var(--color-border)] hover:bg-amber-500 hover:border-amber-500 transition-all cursor-pointer" (click)="showLoginDialog = true">
-                                <div class="flex justify-between items-start">
-                                    <div class="flex-1">
-                                        <h3 class="font-bold text-[var(--color-text)] group-hover:text-white transition-colors text-sm mb-1">{{ article.title }}</h3>
-                                        @if(article.category) { <span class="text-[10px] uppercase tracking-wide opacity-50 text-[var(--color-text-muted)] group-hover:text-white/80">{{ article.category }}</span> }
+                        @if (upcomingEvents().length > 0) {
+                        <div class="space-y-3">
+                            @for (e of upcomingEvents(); track e.id) {
+                                <div class="flex gap-3 group">
+                                    <div class="flex flex-col items-center content-center justify-center w-12 h-12 rounded-xl bg-[var(--color-surface-ground)] border border-[var(--color-border)] text-center leading-none shrink-0">
+                                        <span class="text-[10px] font-bold text-teal-500 uppercase">{{ formatMonth(e.date) }}</span>
+                                        <span class="text-lg font-black text-[var(--color-text)]">{{ formatDayShort(e.date) }}</span>
                                     </div>
-                                    <i class="pi pi-arrow-right text-[var(--color-text-muted)] group-hover:text-white transform group-hover:translate-x-1 transition-all text-xs mt-1"></i>
+                                    <div class="min-w-0 pt-0.5">
+                                        <div class="font-bold text-sm text-[var(--color-text)] truncate group-hover:text-teal-500 transition-colors">{{ e.title }}</div>
+                                        <div class="text-xs text-[var(--color-text-muted)] mt-0.5">{{ e.time_start }} Uhr</div>
+                                    </div>
                                 </div>
-                            </div>
                             }
                         </div>
-                        
-                        <div class="mt-6 p-4 rounded-xl bg-[var(--color-surface-ground)] border border-dashed border-[var(--color-border)] text-center">
-                            <p class="text-xs text-[var(--color-text-muted)] mb-3">Login für vollen Zugriff auf alle Dokumente.</p>
-                            <button (click)="showLoginDialog = true" class="text-xs font-bold text-amber-500 hover:underline">Zum Wiki &rarr;</button>
-                        </div>
-                    </div>
-                    }
-
-                </div>
-            </section>
-
-            <!-- Final CTA Section -->
-            <section class="py-24 px-6 relative overflow-hidden bg-[var(--color-surface-card)]">
-                <div class="max-w-3xl mx-auto text-center relative z-10">
-                    <h2 class="text-4xl md:text-5xl font-extrabold text-[var(--color-text)] mb-6 tracking-tight">
-                        Werde Teil von <span [style.color]="primaryColor">{{ org()!.name }}</span>
-                    </h2>
-                    <p class="text-xl text-[var(--color-text-muted)] mb-10 leading-relaxed">
-                        Registriere dich im Mitgliederbereich, knüpfe Kontakte und bleib immer auf dem Laufenden.
-                    </p>
-                    
-                    <button (click)="showLoginDialog = true"
-                        class="px-12 py-5 rounded-2xl font-bold text-xl text-white transition-all hover:scale-105 shadow-2xl hover:shadow-[0_20px_40px_-10px_rgba(var(--primary-rgb),0.4)] flex items-center justify-center gap-3 mx-auto"
-                        [style.background]="primaryColor">
-                        <i class="pi pi-user-plus"></i>
-                        Jetzt anmelden
-                    </button>
-                    
-                    <p class="mt-8 text-sm text-[var(--color-text-muted)]">
-                        Login nur für bestätigte Mitglieder.
-                    </p>
-                </div>
-            </section>
-
-            <!-- Footer -->
-            <footer class="py-12 px-6 border-t border-[var(--color-border)] text-center md:text-left">
-                <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div class="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
-                        @if (org()!.logo_url) {
-                        <img [src]="org()!.logo_url" alt="" class="w-6 h-6 object-contain grayscale" />
-                        }
-                        <span class="font-bold text-[var(--color-text)] tracking-wider text-sm">{{ org()!.name }}</span>
-                    </div>
-                    <div class="flex gap-8 text-sm font-medium text-[var(--color-text-muted)]">
-                        <a routerLink="/impressum" class="hover:text-[var(--color-text)] transition-colors">Impressum</a>
-                        <a routerLink="/docs" class="hover:text-[var(--color-text)] transition-colors">Handbuch</a>
-                        <a routerLink="/datenschutz" class="hover:text-[var(--color-text)] transition-colors">Datenschutz</a>
-                        <a routerLink="/" class="hover:text-linke transition-colors">Lexion</a>
-                    </div>
-                </div>
-            </footer>
-
-            }
-
-            <p-dialog [(visible)]="showLoginDialog" [modal]="true" [dismissableMask]="true"
-                [style]="{width: '100%', maxWidth: '450px'}" [showHeader]="false"
-                [contentStyle]="{'background': 'transparent', 'padding': '0', 'border': 'none'}" [draggable]="false"
-                [resizable]="false" (onHide)="closeLoginDialog()">
-
-                <div class="bg-[var(--color-surface-card)] rounded-xl border border-[var(--color-border)] overflow-hidden shadow-2xl relative">
-                    <!-- Close Button -->
-                    <button (click)="showLoginDialog = false"
-                        class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-[var(--color-surface)] hover:bg-[var(--color-surface-overlay)] flex items-center justify-center transition-colors text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer">
-                        <i class="pi pi-times"></i>
-                    </button>
-
-                    <!-- Header with Dynamic Gradient -->
-                    <div class="h-32 relative overflow-hidden flex items-center justify-center bg-[var(--color-surface-ground)]">
-                        <div class="absolute inset-0 opacity-30 animate-blob" [style.background]="primaryColor"></div>
-                        <div class="absolute bottom-0 right-0 w-32 h-32 rounded-full opacity-20 blur-2xl bg-teal-500 animate-blob animation-delay-2000"></div>
-
-                        @if (org()!.logo_url) {
-                        <img [src]="org()!.logo_url" alt="" class="h-16 w-auto object-contain relative z-10 drop-shadow-xl" />
                         } @else {
-                        <i class="pi pi-building text-4xl text-white relative z-10 drop-shadow-xl"></i>
+                        <div class="text-center py-4 border border-dashed border-[var(--color-border)] rounded-xl opacity-60">
+                            <p class="text-xs text-[var(--color-text-muted)]">Keine öffentlichen Termine.</p>
+                        </div>
                         }
                     </div>
 
-                    <!-- Content -->
-                    <div class="p-8">
+                </div>
 
-                        <div class="text-center mb-8">
-                            <h2 class="text-2xl font-bold text-[var(--color-text)] mb-2">Willkommen zurück</h2>
-                            <p class="text-sm text-[var(--color-text-muted)]">Melde dich an um fortzufahren</p>
-                        </div>
+                <!-- CENTER COLUMN: Wiki & News -->
+                <div class="lg:col-span-6 space-y-6">
+                    
+                    <!-- Wiki/Docs (Dominant Position) -->
+                    <div>
+                         <h3 class="font-bold text-lg mb-4 px-1 flex items-center gap-2">
+                            <i class="pi pi-book text-amber-500"></i> Wissen & Infos
+                        </h3>
 
-                        <!-- Step 1: Email -->
-                        @if (loginStep() === 'email') {
-                        <div class="space-y-6 animate-fadein">
-                            <div class="space-y-2">
-                                <label class="text-xs font-bold uppercase text-[var(--color-text-muted)] tracking-wider ml-1">E-Mail Adresse</label>
-                                <span class="p-input-icon-left w-full">
-                                    <i class="pi pi-envelope text-[var(--color-text-muted)]"></i>
-                                    <input pInputText type="email" [(ngModel)]="loginEmail" (keydown.enter)="checkEmail()"
-                                        placeholder="dein.name@beispiel.de"
-                                        class="w-full !pl-10 !py-3 !rounded-xl !bg-[var(--color-surface-ground)] !border-[var(--color-border)] focus:!border-linke transition-colors" />
-                                </span>
-                            </div>
+                        @if (wikiArticles().length > 0) {
+                        <div class="grid md:grid-cols-2 gap-4">
+                            @for (doc of wikiArticles(); track doc.id) {
+                            <div (click)="openArticle(doc)" class="flex flex-col p-5 rounded-2xl bg-[var(--color-surface-card)] border border-[var(--color-border)] hover:border-amber-500 transition-all cursor-pointer group shadow-sm h-full relative overflow-hidden">
+                                <!-- Background decoration -->
+                                <div class="absolute right-0 top-0 w-24 h-24 bg-amber-500/5 rounded-bl-[100px] -mr-4 -mt-4 transition-transform group-hover:scale-150"></div>
 
-                            <button (click)="checkEmail()" [disabled]="!loginEmail || loginLoading()"
-                                class="w-full py-3.5 rounded-xl font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg flex items-center justify-center gap-2"
-                                [style.background]="primaryColor">
-                                @if (loginLoading()) {
-                                <i class="pi pi-spin pi-spinner"></i>
-                                } @else {
-                                <span class="flex items-center gap-2">Weiter <i class="pi pi-arrow-right text-xs"></i></span>
-                                }
-                            </button>
-
-                            @if (loginError()) {
-                            <div class="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-sm flex items-start gap-2">
-                                <i class="pi pi-exclamation-circle mt-0.5"></i>
-                                <span>{{ loginError() }}</span>
+                                <div class="flex items-start justify-between mb-3 relative z-10">
+                                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-all">
+                                        <i class="pi pi-file-o text-xl"></i>
+                                    </div>
+                                    @if(doc.category) { <span class="px-2 py-1 rounded bg-[var(--color-surface-ground)] text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider">{{ doc.category }}</span> }
+                                </div>
+                                <h3 class="font-bold text-[var(--color-text)] text-lg mb-2 leading-snug group-hover:text-amber-500 transition-colors relative z-10">{{ doc.title }}</h3>
+                                <div class="mt-auto pt-4 flex items-center text-xs font-bold text-[var(--color-text-muted)] group-hover:text-amber-500 transition-colors relative z-10">
+                                    Lesen <i class="pi pi-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i>
+                                </div>
                             </div>
                             }
                         </div>
-                        }
-
-                        <!-- Step 2: Password -->
-                        @if (loginStep() === 'password') {
-                        <div class="space-y-6 animate-fadein">
-                             <div class="bg-[var(--color-surface-ground)] p-3 rounded-xl border border-[var(--color-border)] flex items-center justify-between mb-2">
-                                <div class="flex items-center gap-3">
-                                     <div class="w-8 h-8 rounded-full bg-[var(--color-surface-raised)] flex items-center justify-center text-[var(--color-text)] font-bold text-xs border border-[var(--color-border)]">
-                                        {{ foundMember?.email?.charAt(0).toUpperCase() }}
-                                     </div>
-                                     <div class="flex flex-col">
-                                         <span class="text-xs font-bold text-[var(--color-text)]">{{ foundMember?.email }}</span>
-                                         <span class="text-[10px] text-[var(--color-text-muted)]">Mitglied</span>
-                                     </div>
-                                </div>
-                                <button (click)="loginStep.set('email')" class="text-xs text-linke hover:underline font-bold">Ändern</button>
+                        } @else {
+                             <div class="p-8 rounded-2xl bg-[var(--color-surface-card)] border border-[var(--color-border)] border-dashed text-center text-[var(--color-text-muted)]">
+                                <i class="pi pi-lock text-4xl mb-2 opacity-50"></i>
+                                <p>Interne Dokumente sind nur für eingeloggte Mitglieder sichtbar.</p>
+                                <button (click)="navigateToLogin()" class="mt-3 text-xs font-bold text-amber-500 hover:underline">Zum Login &rarr;</button>
                              </div>
+                        }
+                    </div>
 
-                            <div class="space-y-2">
-                                <div class="flex justify-between items-center ml-1">
-                                    <label class="text-xs font-bold uppercase text-[var(--color-text-muted)] tracking-wider">Passwort</label>
-                                    <button (click)="requestPasswordReset()" class="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors">Vergessen?</button>
-                                </div>
-                                <span class="p-input-icon-left w-full">
-                                    <i class="pi pi-lock text-[var(--color-text-muted)]"></i>
-                                    <input pInputText type="password" [(ngModel)]="loginPassword" (keydown.enter)="doLogin()"
-                                        placeholder="••••••••"
-                                        class="w-full !pl-10 !py-3 !rounded-xl !bg-[var(--color-surface-ground)] !border-[var(--color-border)] focus:!border-linke transition-colors" />
-                                </span>
-                            </div>
-
-                            <button (click)="doLogin()" [disabled]="!loginPassword || loginLoading()"
-                                class="w-full py-3.5 rounded-xl font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg flex items-center justify-center gap-2"
-                                [style.background]="primaryColor">
-                                @if (loginLoading()) {
-                                <i class="pi pi-spin pi-spinner"></i>
-                                } @else {
-                                <span>Anmelden</span>
+                    <!-- News Feed (Secondary) -->
+                    <div>
+                        <h3 class="font-bold text-lg mb-4 px-1 flex items-center gap-2">
+                            <i class="pi pi-megaphone text-[var(--color-primary)]"></i> Neuigkeiten
+                        </h3>
+                        
+                        @if (feedItems().length > 0) {
+                            <div class="space-y-4">
+                                @for (item of feedItems(); track item.id) {
+                                    <article class="p-5 rounded-2xl bg-[var(--color-surface-card)] border border-[var(--color-border)] shadow-sm hover:border-[var(--color-primary-300)] transition-all cursor-pointer group" (click)="navigateToLogin()">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <span class="text-xs font-bold text-[var(--color-text-muted)]">
+                                                {{ formatDate(item.created_at) }}
+                                            </span>
+                                        </div>
+                                        <h2 class="text-lg font-bold mb-2 text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors">{{ item.title }}</h2>
+                                        <div class="text-sm text-[var(--color-text-muted)] leading-relaxed line-clamp-2" [innerHTML]="item.content"></div>
+                                    </article>
                                 }
-                            </button>
-
-                            @if (loginError()) {
-                            <div class="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-sm flex items-start gap-2 animate-shake">
-                                <i class="pi pi-exclamation-circle mt-0.5"></i>
-                                <span>{{ loginError() }}</span>
                             </div>
-                            }
-                        </div>
-                        }
-
-                        <!-- Step 3: Invitation Sent -->
-                        @if (loginStep() === 'invitation-sent') {
-                        <div class="text-center space-y-6 py-4 animate-fadein">
-                            <div class="w-20 h-20 mx-auto rounded-full bg-green-500/10 flex items-center justify-center ring-4 ring-green-500/5">
-                                <i class="pi pi-envelope text-3xl text-green-500"></i>
+                        } @else {
+                            <div class="p-8 rounded-2xl bg-[var(--color-surface-card)] border border-[var(--color-border)] border-dashed text-center text-[var(--color-text-muted)]">
+                                <i class="pi pi-inbox text-4xl mb-2 opacity-50"></i>
+                                <p>Keine aktuellen Neuigkeiten.</p>
                             </div>
-                            
-                            <div class="space-y-2">
-                                <h3 class="text-xl font-bold text-[var(--color-text)]">E-Mail gesendet!</h3>
-                                <p class="text-sm text-[var(--color-text-muted)]">
-                                    Wir haben dir einen Login-Link an <strong class="text-[var(--color-text)]">{{ loginEmail }}</strong> geschickt.
-                                </p>
-                            </div>
-
-                            <button (click)="closeLoginDialog()"
-                                class="w-full py-3.5 rounded-xl font-bold border border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surface-overlay)] transition-all">
-                                Schließen
-                            </button>
-                        </div>
-                        }
-
-                        <!-- Step 4: Not Found -->
-                        @if (loginStep() === 'not-found') {
-                        <div class="text-center space-y-6 py-4 relative z-10 animate-fadein">
-                            <div class="w-20 h-20 mx-auto rounded-full bg-amber-500/10 flex items-center justify-center ring-4 ring-amber-500/5">
-                                <i class="pi pi-user-minus text-3xl text-amber-500"></i>
-                            </div>
-                            
-                            <div class="space-y-2">
-                                <h3 class="text-xl font-bold text-[var(--color-text)]">Unbekannte E-Mail</h3>
-                                <p class="text-sm text-[var(--color-text-muted)] max-w-xs mx-auto">
-                                    Wir konnten kein Mitglied mit der Adresse <strong class="text-[var(--color-text)]">{{ loginEmail }}</strong> finden.
-                                </p>
-                            </div>
-
-                            <button (click)="loginStep.set('email')"
-                                class="w-full py-3.5 rounded-xl font-bold border border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surface-overlay)] transition-all">
-                                Eingabe korrigieren
-                            </button>
-
-                            <p class="text-xs text-[var(--color-text-muted)]">
-                                Wenn du Mitglied bist und dich nicht anmelden kannst, wende dich bitte an den Vorstand.
-                            </p>
-                        </div>
                         }
                     </div>
                 </div>
+
+                <!-- RIGHT COLUMN: Actions & Groups -->
+                <div class="lg:col-span-3 space-y-6">
+                    
+                    <!-- Call to Action -->
+                    <div class="p-6 rounded-2xl bg-gradient-to-br from-[var(--color-surface-raised)] to-[var(--color-surface-card)] border border-[var(--color-border)] shadow-lg text-center relative overflow-hidden group">
+                         <div class="absolute inset-0 opacity-10 bg-[image:linear-gradient(45deg,var(--color-primary)_25%,transparent_25%,transparent_50%,var(--color-primary)_50%,var(--color-primary)_75%,transparent_75%,transparent)] bg-[length:20px_20px]"></div>
+                        
+                        <h3 class="font-bold text-xl mb-2 text-[var(--color-text)] relative z-10">Willkommen!</h3>
+                        <p class="text-sm text-[var(--color-text-muted)] mb-6 relative z-10">Melde dich an, um auf interne Inhalte zuzugreifen.</p>
+                        <button (click)="navigateToLogin()" class="w-full py-3 text-white rounded-xl font-bold hover:brightness-110 transition-all shadow-lg active:scale-95 relative z-10 flex items-center justify-center gap-2" [style.background]="primaryColor">
+                            <i class="pi pi-sign-in"></i> Login
+                        </button>
+                    </div>
+
+                    <!-- Working Groups -->
+                    @if (workingGroups().length > 0) {
+                    <div class="p-5 rounded-2xl bg-[var(--color-surface-card)] border border-[var(--color-border)] shadow-sm">
+                        <h3 class="font-bold mb-4 flex items-center gap-2 text-sm uppercase tracking-wider text-violet text-[var(--color-text-muted)]">
+                            <i class="pi pi-briefcase text-violet"></i> Arbeitsgruppen
+                        </h3>
+                        <div class="space-y-3">
+                            @for (wg of workingGroups(); track wg.id) {
+                                <div class="p-3 rounded-xl bg-[var(--color-surface-ground)] hover:bg-[var(--color-surface-hover)] border border-[var(--color-border)] transition-colors cursor-pointer group" (click)="navigateToLogin()">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <div class="font-bold text-sm text-[var(--color-text)]">{{ wg.name }}</div>
+                                        <i class="pi pi-arrow-right text-[10px] opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0"></i>
+                                    </div>
+                                    @if(wg.description) { <div class="text-xs text-[var(--color-text-muted)] line-clamp-2">{{ wg.description }}</div> }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    }
+
+                    <!-- Mini Footer -->
+                    <div class="text-xs text-[var(--color-text-muted)] text-center space-x-2 opacity-60 mt-6">
+                        <a routerLink="/impressum" class="hover:underline">Impressum</a> •
+                        <a routerLink="/datenschutz" class="hover:underline">Datenschutz</a>
+                    </div>
+
+                </div>
+
+            </main>
+
+            <!-- Public Article Dialog -->
+            <p-dialog 
+                [header]="selectedArticle()?.title || ''" 
+                [(visible)]="articleDialogVisible" 
+                [modal]="true" 
+                [style]="{width: '90vw', maxWidth: '800px', maxHeight: '90vh'}" 
+                [dismissableMask]="true"
+                [draggable]="false"
+                [resizable]="false">
+                
+                @if (selectedArticle()) {
+                    <div class="prose prose-sm md:prose-base dark:prose-invert max-w-none">
+                        <div class="mb-4 flex items-center gap-2">
+                             <span class="px-2 py-1 rounded bg-[var(--color-surface-ground)] text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider">
+                                {{ selectedArticle()!.category || 'Allgemein' }}
+                             </span>
+                        </div>
+                        <div [innerHTML]="selectedArticle()!.content"></div>
+                    </div>
+                }
             </p-dialog>
+            
+            }
         </div>
     `,
 })
@@ -516,14 +348,9 @@ export class OrgPublicPageComponent implements OnInit {
     workingGroups = signal<WorkingGroup[]>([]);
     contacts = signal<ContactPerson[]>([]);
 
-    // Login dialog
-    showLoginDialog = false;
-    loginStep = signal<LoginStep>('email');
-    loginEmail = '';
-    loginPassword = '';
-    loginLoading = signal(false);
-    loginError = signal<string | null>(null);
-    foundMember: any = null;
+    // Article Dialog
+    selectedArticle = signal<PublicWikiArticle | null>(null);
+    articleDialogVisible = false;
 
     currentYear = new Date().getFullYear();
 
@@ -669,105 +496,8 @@ export class OrgPublicPageComponent implements OnInit {
         this.contacts.set((data as ContactPerson[]) || []);
     }
 
-    // Login Flow - Uses AuthService for multi-org support
-    async checkEmail(): Promise<void> {
-        if (!this.loginEmail) return;
-
-        this.loginLoading.set(true);
-        this.loginError.set(null);
-
-        try {
-            // Use AuthService to check email (calls send-invitation Edge Function)
-            const result = await this.auth.checkEmail(
-                this.loginEmail.toLowerCase().trim(),
-                this.org()!.id // Pass current org for context, but function checks globally
-            );
-
-            this.loginLoading.set(false);
-
-            switch (result.status) {
-                case 'connected':
-                    // User exists and is connected - show password field
-                    this.foundMember = { email: this.loginEmail };
-                    this.loginStep.set('password');
-                    break;
-
-                case 'invitation_sent':
-                    // Invitation email was sent
-                    this.loginStep.set('invitation-sent');
-                    break;
-
-                case 'not_found':
-                    // No member with this email found
-                    this.loginStep.set('not-found');
-                    break;
-
-                case 'error':
-                    // Edge function returned an error
-                    this.loginError.set(result.details || result.error || 'Ein Fehler ist aufgetreten.');
-                    break;
-
-                default:
-                    if (result.error) {
-                        this.loginError.set(result.error);
-                    }
-            }
-        } catch (e) {
-            this.loginLoading.set(false);
-            this.loginError.set('Ein Fehler ist aufgetreten. Bitte versuche es erneut.');
-            console.error('Login check error:', e);
-        }
-    }
-
-    async doLogin(): Promise<void> {
-        if (!this.loginEmail || !this.loginPassword) return;
-
-        this.loginLoading.set(true);
-        this.loginError.set(null);
-
-        const { error } = await this.supabase.client.auth.signInWithPassword({
-            email: this.loginEmail,
-            password: this.loginPassword,
-        });
-
-        this.loginLoading.set(false);
-
-        if (error) {
-            if (error.message.includes('Invalid login')) {
-                this.loginError.set('Falsches Passwort.');
-            } else {
-                this.loginError.set(error.message);
-            }
-            return;
-        }
-
-        // Success - navigate to dashboard
-        this.showLoginDialog = false;
-        this.router.navigate(['/', this.slug(), 'dashboard']);
-    }
-
-    async requestPasswordReset(): Promise<void> {
-        if (!this.loginEmail) return;
-
-        this.loginLoading.set(true);
-
-        const { error } = await this.supabase.client.auth.resetPasswordForEmail(this.loginEmail, {
-            redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
-        });
-
-        this.loginLoading.set(false);
-
-        if (!error) {
-            this.loginStep.set('invitation-sent');
-        }
-    }
-
-    closeLoginDialog(): void {
-        this.showLoginDialog = false;
-        this.loginStep.set('email');
-        this.loginEmail = '';
-        this.loginPassword = '';
-        this.loginError.set(null);
+    navigateToLogin() {
+        this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
     }
 
     formatMonth(dateStr: string): string {
@@ -794,5 +524,10 @@ export class OrgPublicPageComponent implements OnInit {
         const tmp = document.createElement("DIV");
         tmp.innerHTML = html;
         return tmp.textContent || tmp.innerText || "";
+    }
+
+    openArticle(doc: PublicWikiArticle) {
+        this.selectedArticle.set(doc);
+        this.articleDialogVisible = true;
     }
 }

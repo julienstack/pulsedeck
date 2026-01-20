@@ -239,6 +239,26 @@ export class WikiComponent implements OnInit {
   async saveDoc() {
     if (!this.currentDoc.title || !this.currentDoc.description) return;
 
+    // Fix: Ensure organization_id is set (DB constraint)
+    if (!this.currentDoc.organization_id) {
+      const orgId = this.auth.currentOrgId();
+      if (!orgId) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Fehler',
+          detail: 'Keine aktive Organisation gefunden. Bitte neu laden.'
+        });
+        return;
+      }
+      this.currentDoc.organization_id = orgId;
+    }
+
+    // Fix: Ensure author is set (DB constraint)
+    if (!this.currentDoc.author) {
+      const member = this.auth.currentMember();
+      this.currentDoc.author = member ? member.name : 'Vom System';
+    }
+
     // Security: Check if user is allowed to publish or keep published status
     const isCommittee = this.permissions.isCommittee();
     const canPub = this.canPublish(); // Uses cached calculation from open/edit

@@ -59,6 +59,7 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 
 **🐛 Bugfixes & Stability**
 - [x] **Wiki Critical Fix:** Absturz beim Laden behoben (fehlende `organization_id` Spalte)
+- [x] **UI Logic Fix:** Sichergestellt, dass `organization_id` und `author` beim Speichern immer gesetzt sind
 - [x] **Multi-Tenancy:** Wiki-Artikel sind nun korrekt Mandanten-fähig (`organization_id`, `working_group_id`)
 - [x] **Daten-Integrität:** DB-Migration für striktere Wiki-Constraints angewendet
 
