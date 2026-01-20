@@ -1,4 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -76,6 +78,7 @@ import { AuthService } from '../../../shared/services/auth.service';
                                     name="slug"
                                     class="flex-1 font-mono" 
                                     placeholder="mein-verein"
+                                    (input)="onSlugInput()"
                                     (blur)="checkSlugAvailability()"
                                     required
                                 />
@@ -134,6 +137,15 @@ export class CreateOrganizationComponent {
     slug = '';
     loading = signal(false);
     slugStatus = signal<'idle' | 'checking' | 'available' | 'taken'>('idle');
+    private slugCheck$ = new Subject<string>();
+
+    constructor() {
+        this.slugCheck$
+            .pipe(debounceTime(500), distinctUntilChanged())
+            .subscribe(() => {
+                this.checkSlugAvailability();
+            });
+    }
 
     generateSlug(): void {
         // Auto-generate slug from name
@@ -148,7 +160,11 @@ export class CreateOrganizationComponent {
             .replace(/[\s_-]+/g, '-')
             .replace(/^-+|-+$/g, '');
 
-        this.slugStatus.set('idle');
+        this.slugCheck$.next(this.slug);
+    }
+
+    onSlugInput(): void {
+        this.slugCheck$.next(this.slug);
     }
 
     async checkSlugAvailability(): Promise<void> {
