@@ -141,6 +141,8 @@ Deno.serve(async (req: Request) => {
 
         if (existingUserId) {
             console.log(`[send-invitation] Found existing auth user: ${existingUserId}`);
+            // Do NOT link immediately
+            /*
             // Link unconnected members to existing user
             for (const member of unconnectedMembers) {
                 await supabaseAdmin
@@ -148,6 +150,7 @@ Deno.serve(async (req: Request) => {
                     .update({ user_id: existingUserId })
                     .eq("id", member.id);
             }
+            */
 
             return new Response(
                 JSON.stringify({
@@ -211,6 +214,8 @@ Deno.serve(async (req: Request) => {
             );
         }
 
+        // Do NOT link immediately
+        /*
         // Link the new auth user to all unconnected members
         if (inviteData?.user?.id) {
             console.log(`[send-invitation] Linking new user ${inviteData.user.id} to members`);
@@ -221,6 +226,7 @@ Deno.serve(async (req: Request) => {
                     .eq("id", member.id);
             }
         }
+        */
 
         console.log("[send-invitation] Invitation sent successfully");
         return new Response(

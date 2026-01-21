@@ -1,7 +1,7 @@
 # 🚀 Lexion Roadmap
 
-> **Letzte Aktualisierung:** 21. Januar 2026 (16:35)  
-> **Aktuelle Version:** Alpha 0.9.4
+> **Letzte Aktualisierung:** 21. Januar 2026 (17:35)  
+> **Aktuelle Version:** Alpha 0.9.5
 
 ---
 
@@ -61,6 +61,14 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 - [x] **Live-Voting:** Echtzeit-Abstimmung mit visueller Balkengrafik
 - [x] **Feed-Integration:** Nahtlose Einbindung in den bestehenden News-Feed
 - [x] **Vote-Management:** Ändern der eigenen Stimme jederzeit möglich
+
+### v0.9.5 – 21. Januar 2026 (Invite Flow Fixes)
+
+**📧 Einladungs-System**
+- [x] **Smart Invites:** Automatische Passwort-Reset-Einladung, falls Nutzerkonto bereits existiert (statt Fehler)
+- [x] **Localhost Support:** Einladungs-Links funktionieren jetzt auch lokal korrekt (Connection Refused Fix)
+- [x] **Auto-Link:** Mitglieder werden erst nach erfolgreicher E-Mail-Bestätigung mit ihrem Profil verknüpft (Phantom-Login Fix)
+- [x] **Zuverlässigkeit:** Edge Functions für Einladungen stabiler gemacht und aktualisiert
 
 ### v0.9.3 – 19. Januar 2026 (Growth Update)
 

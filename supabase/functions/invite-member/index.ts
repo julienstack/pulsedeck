@@ -87,15 +87,29 @@ Deno.serve(async (req: Request) => {
         const existingUser = existingUsers?.users?.find(u => u.email === email);
 
         if (existingUser) {
-            // Link existing user to member
-            await supabaseAdmin
-                .from("members")
-                .update({ user_id: existingUser.id })
-                .eq("id", memberId);
+            // User exists, send password reset link instead of invite
+            const siteUrl = Deno.env.get("SITE_URL") || "https://lexion.hyretic.com";
+            const finalRedirectTo = redirectTo || `${siteUrl}/auth/callback`;
+
+            const { error: resetError } = await supabaseAdmin.auth.admin.generateLink({
+                type: 'recovery',
+                email: email,
+                options: {
+                    redirectTo: finalRedirectTo
+                }
+            });
+
+            if (resetError) {
+                return new Response(
+                    JSON.stringify({ error: resetError.message }),
+                    { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+                );
+            }
 
             return new Response(
                 JSON.stringify({
-                    message: "User already exists, linked to member",
+                    message: "User exists, password reset link sent",
+                    type: "reset",
                     userId: existingUser.id
                 }),
                 { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -123,13 +137,15 @@ Deno.serve(async (req: Request) => {
             );
         }
 
-        // Update member with the new user_id
+        // Do NOT link immediately. Linking happens via Database Trigger on auth.users update/insert
+        /*
         if (inviteData?.user?.id) {
             await supabaseAdmin
                 .from("members")
                 .update({ user_id: inviteData.user.id })
                 .eq("id", memberId);
         }
+        */
 
         return new Response(
             JSON.stringify({
