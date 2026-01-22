@@ -260,7 +260,11 @@ export class MembersService implements OnDestroy {
             body: JSON.stringify({
                 email,
                 memberId,
-                redirectTo: `${window.location.origin}/auth/callback`,
+                // Only send redirectTo for localhost development, 
+                // otherwise let the Edge Function use the configured SITE_URL
+                ...(window.location.hostname === 'localhost'
+                    ? { redirectTo: `${window.location.origin}/auth/callback` }
+                    : {}),
             }),
         });
 
