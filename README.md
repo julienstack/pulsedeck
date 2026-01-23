@@ -1,15 +1,15 @@
-# Lexion - The Engagement Layer for Modern Organizations 🇪🇺
+# PulseDeck - The Engagement Layer for Modern Organizations 🇪🇺
 
-![Lexion Badge](https://img.shields.io/badge/Status-Alpha-orange) ![License](https://img.shields.io/badge/License-AGPLv3-blue) ![Made in EU](https://img.shields.io/badge/Made_in-EU-blue?labelColor=yellow)
+![PulseDeck Badge](https://img.shields.io/badge/Status-Alpha-orange) ![License](https://img.shields.io/badge/License-AGPLv3-blue) ![Made in EU](https://img.shields.io/badge/Made_in-EU-blue?labelColor=yellow)
 
-Lexion ist keine weitere langweilige Vereinsverwaltung. Es ist dein **System of Engagement**.
+PulseDeck ist keine weitere langweilige Vereinsverwaltung. Es ist dein **System of Engagement**.
 Wir ersetzen das Chaos aus WhatsApp-Gruppen, Excel-Listen und verlorenen E-Mails durch eine strukturierte, datenschutzkonforme Plattform.
 
 **Fokus:** Politische Parteien, NGOs, Aktionsbündnisse und moderne Vereine.
 
 ---
 
-## 🚀 Warum Lexion?
+## 🚀 Warum PulseDeck?
 
 ### Das Problem (The Horror)
 *   **Datenschutz-Albtraum:** In WhatsApp-Gruppen sieht jeder jede Handynummer.
@@ -26,7 +26,7 @@ Wir ersetzen das Chaos aus WhatsApp-Gruppen, Excel-Listen und verlorenen E-Mails
 
 ## 🛠 Tech Stack
 
-Lexion setzt auf moderne, robuste Technologien:
+PulseDeck setzt auf moderne, robuste Technologien:
 
 *   **Frontend:** [Angular 18](https://angular.io) (Standalone Components, Signals)
 *   **UI Library:** [PrimeNG](https://primeng.org) + [Tailwind CSS](https://tailwindcss.com) (für Utility-Styling)
@@ -56,8 +56,8 @@ Lexion setzt auf moderne, robuste Technologien:
 
 1.  **Repo klonen:**
     ```bash
-    git clone https://github.com/julienstack/lexion.git
-    cd lexion
+    git clone https://github.com/julienstack/pulsedeck.git
+    cd pulsedeck
     ```
 
 2.  **Abhängigkeiten installieren:**
@@ -86,8 +86,7 @@ npx cap open android
 
 ## 🤝 Contributing & Support
 
-Lexion ist Open Source, um demokratische Strukturen zu stärken.
-Lexion ist Open Source, um demokratische Strukturen zu stärken.
+PulseDeck ist Open Source, um demokratische Strukturen zu stärken.
 Trag gerne Code bei, melde Bugs oder gib uns Feedback!
 
 ---
@@ -95,6 +94,6 @@ Trag gerne Code bei, melde Bugs oder gib uns Feedback!
 ## 📄 Lizenz
 
 Dieses Projekt ist lizenziert unter der **GNU Affero General Public License v3.0 (AGPLv3)**.
-Das bedeutet: Wenn du Lexion nutzt, veränderst und als Service anbietest, musst du deine Änderungen ebenfalls der Community zur Verfügung stellen.
+Das bedeutet: Wenn du PulseDeck nutzt, veränderst und als Service anbietest, musst du deine Änderungen ebenfalls der Community zur Verfügung stellen.
 
 *Datensouveränität ist kein Feature, sondern ein Grundrecht.* 🛡️

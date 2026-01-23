@@ -35,12 +35,12 @@ function escapeICalText(text: string): string {
 /**
  * Generate iCal content from events
  */
-function generateICalContent(events: any[], calendarName: string = 'Lexion'): string {
+function generateICalContent(events: any[], calendarName: string = 'PulseDeck'): string {
     const now = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
 
     let ical = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Lexion//Vereinsverwaltung//DE
+PRODID:-//PulseDeck//Vereinsverwaltung//DE
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:${calendarName}
@@ -48,7 +48,7 @@ X-WR-TIMEZONE:Europe/Berlin
 `;
 
     for (const event of events) {
-        const uid = `${event.id}@lexion.dev`;
+        const uid = `${event.id}@pulsedeck.de`;
         const dtStart = formatICalDate(event.date, event.start_time);
         const dtEnd = event.end_time
             ? formatICalDate(event.date, event.end_time)
@@ -179,14 +179,14 @@ Deno.serve(async (req: Request) => {
         }
 
         // Get calendar name
-        let calendarName = 'Lexion Kalender';
+        let calendarName = 'PulseDeck Kalender';
         if (filterAgId) {
             const { data: ag } = await supabaseClient
                 .from('working_groups')
                 .select('name')
                 .eq('id', filterAgId)
                 .single();
-            if (ag) calendarName = `Lexion - ${ag.name}`;
+            if (ag) calendarName = `PulseDeck - ${ag.name}`;
         } else if (orgId) {
             // Try to fetch org name? Not critical.
         }

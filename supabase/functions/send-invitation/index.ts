@@ -168,7 +168,7 @@ Deno.serve(async (req: Request) => {
 
         // No auth user exists - send invitation
 
-        const siteUrl = Deno.env.get("SITE_URL") || "https://lexion.hyretic.com";
+        const siteUrl = Deno.env.get("SITE_URL") || "https://pulsedeck.de";
         // Prefer client-provided redirect, then origin header (if available), then configured site URL
         const origin = req.headers.get("origin");
 

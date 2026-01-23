@@ -88,7 +88,7 @@ Deno.serve(async (req: Request) => {
 
         if (existingUser) {
             // User exists, send password reset email
-            const siteUrl = Deno.env.get("SITE_URL") || "https://lexion.hyretic.com";
+            const siteUrl = Deno.env.get("SITE_URL") || "https://pulsedeck.de";
             const finalRedirectTo = redirectTo || `${siteUrl}/auth/callback`;
 
             // Use the regular client method which actually sends the email
@@ -123,7 +123,7 @@ Deno.serve(async (req: Request) => {
 
         // Invite new user via email
         // Use SITE_URL env variable to ensure production URL is used in emails
-        const siteUrl = Deno.env.get("SITE_URL") || "https://lexion.hyretic.com";
+        const siteUrl = Deno.env.get("SITE_URL") || "https://pulsedeck.de";
         const finalRedirectTo = redirectTo || `${siteUrl}/auth/callback`;
 
         const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {

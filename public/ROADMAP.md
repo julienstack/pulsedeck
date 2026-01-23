@@ -1,4 +1,4 @@
-# 🚀 Lexion Roadmap
+# 🚀 PulseDeck Roadmap
 
 > **Letzte Aktualisierung:** 21. Januar 2026 (17:35)  
 > **Aktuelle Version:** Alpha 0.9.5
@@ -7,7 +7,7 @@
 
 ## 📋 Was ist diese Seite?
 
-Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet wird und was bereits umgesetzt wurde. Du kannst hier den Fortschritt von Lexion verfolgen!
+Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet wird und was bereits umgesetzt wurde. Du kannst hier den Fortschritt von PulseDeck verfolgen!
 
 ---
 

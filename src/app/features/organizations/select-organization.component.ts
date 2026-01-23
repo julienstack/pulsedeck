@@ -62,7 +62,7 @@ import { SupabaseService } from '../../shared/services/supabase';
                                     {{ org.name }}
                                 </h3>
                                 <p class="text-xs text-[var(--color-text-muted)]">
-                                    lexion.de/{{ org.slug }}
+                                    pulsedeck.de/{{ org.slug }}
                                 </p>
                             </div>
 

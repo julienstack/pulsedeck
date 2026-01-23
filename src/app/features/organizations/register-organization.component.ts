@@ -105,7 +105,7 @@ import { SupabaseService } from '../../shared/services/supabase';
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-[var(--color-text)]">URL</label>
                             <div class="flex items-center gap-2">
-                                <span class="text-sm text-[var(--color-text-muted)]">lexion.de/</span>
+                                <span class="text-sm text-[var(--color-text-muted)]">pulsedeck.de/</span>
                                 <input pInputText [(ngModel)]="slug" (blur)="checkSlug()"
                                     class="flex-1" placeholder="mein-verein" />
                             </div>

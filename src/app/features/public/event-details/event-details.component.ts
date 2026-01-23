@@ -39,7 +39,7 @@ export class EventDetailsComponent implements OnInit {
             this.event.set(data);
 
             // Set Meta Tags for Social Sharing
-            this.titleService.setTitle(`${data.title} - ${data.organization?.name || 'Lexion'}`);
+            this.titleService.setTitle(`${data.title} - ${data.organization?.name || 'PulseDeck'}`);
             this.metaService.updateTag({ name: 'description', content: data.description || 'Event Details' });
             this.metaService.updateTag({ property: 'og:title', content: data.title });
             this.metaService.updateTag({ property: 'og:description', content: data.description || `Event am ${data.date} in ${data.location}` });

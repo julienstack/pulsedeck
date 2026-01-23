@@ -22,7 +22,7 @@ import { AuthService } from '../../../shared/services/auth.service';
                     <div class="w-8 h-8 rounded-lg bg-linke/20 flex items-center justify-center">
                         <i class="pi pi-book text-linke text-sm"></i>
                     </div>
-                    <span class="font-bold text-lg">Lexion Docs</span>
+                    <span class="font-bold text-lg">PulseDeck Docs</span>
                 </a>
                 
                 <a [routerLink]="backLink()" class="px-4 py-2 rounded-lg bg-[var(--color-surface-raised)] border border-[var(--color-border)] hover:bg-[var(--color-surface-overlay)] text-sm font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text)] flex items-center gap-2 transition-all no-underline cursor-pointer">
@@ -40,7 +40,7 @@ import { AuthService } from '../../../shared/services/auth.service';
                         Handbuch
                     </h1>
                     <p class="text-[var(--color-text-muted)] text-lg">
-                        Anleitungen, Workflows und Hilfe für Lexion.
+                        Anleitungen, Workflows und Hilfe für PulseDeck.
                     </p>
                 </div>
                 <div>
@@ -109,7 +109,7 @@ import { AuthService } from '../../../shared/services/auth.service';
                 <div class="flex justify-center gap-4 mt-4">
                      <a [routerLink]="backLink()" class="text-linke hover:underline cursor-pointer">Zur Startseite</a>
                      <span>•</span>
-                     <a href="mailto:support@lexion.app" class="text-linke hover:underline">Support kontaktieren</a>
+                     <a href="mailto:support@pulsedeck.de" class="text-linke hover:underline">Support kontaktieren</a>
                 </div>
             </div>
         </div>

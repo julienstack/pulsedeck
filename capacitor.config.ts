@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.lexion.app',
-  appName: 'Lexion',
+  appId: 'com.pulsedeck.app',
+  appName: 'PulseDeck',
   webDir: 'dist/dashboard/browser'
 };
 

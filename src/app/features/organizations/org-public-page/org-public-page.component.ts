@@ -98,7 +98,7 @@ type LoginStep = 'email' | 'password' | 'invitation-sent' | 'not-found';
                     </div>
                     <div class="flex items-center gap-3">
                         <a routerLink="/" class="text-sm font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors flex items-center gap-2 mr-2">
-                             <i class="pi pi-arrow-left text-xs"></i> Lexion
+                             <i class="pi pi-arrow-left text-xs"></i> PulseDeck
                         </a>
                         <button pButton label="Login" icon="pi pi-sign-in" (click)="navigateToLogin()" size="small" [style]="{background: primaryColor, border: 'none', borderRadius: '12px'}" class="px-4 font-bold md:hidden"></button>
                     </div>

@@ -70,7 +70,7 @@ import { AuthService } from '../../../shared/services/auth.service';
                                 URL-Slug *
                             </label>
                             <div class="flex items-center gap-2">
-                                <span class="text-[var(--color-text-muted)] text-sm">lexion.dev/</span>
+                                <span class="text-[var(--color-text-muted)] text-sm">pulsedeck.de/</span>
                                 <input 
                                     type="text" 
                                     pInputText 

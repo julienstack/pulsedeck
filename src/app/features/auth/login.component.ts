@@ -40,7 +40,7 @@ type LoginStep = 'email' | 'password' | 'invitation-sent' | 'not-found';
             <div class="w-16 h-16 mb-4 rounded-2xl bg-gradient-to-br from-linke to-linke-dark flex items-center justify-center shadow-lg shadow-linke/20 ring-4 ring-linke/5">
               <i class="pi pi-users text-white text-2xl"></i>
             </div>
-            <h1 class="text-2xl font-bold text-[var(--color-text)] mb-1">Lexion</h1>
+            <h1 class="text-2xl font-bold text-[var(--color-text)] mb-1">PulseDeck</h1>
             <p class="text-[var(--color-text-muted)] text-sm">Melde dich an, um fortzufahren</p>
           </div>
 

@@ -1,6 +1,6 @@
 {
-  "name": "dashboard",
-  "short_name": "dashboard",
+  "name": "PulseDeck",
+  "short_name": "PulseDeck",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",

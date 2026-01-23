@@ -1,13 +1,13 @@
-# � Lexion Dokumentation
+# 📖 PulseDeck Dokumentation
 
-Willkommen in der offiziellen Dokumentation von Lexion. Hier erfährst du alles über die Bedienung, Funktionen und Administration deiner Vereins-Plattform.
+Willkommen in der offiziellen Dokumentation von PulseDeck. Hier erfährst du alles über die Bedienung, Funktionen und Administration deiner Vereins-Plattform.
 
 ---
 
 ## 🏁 Einführung
 
-### Was ist Lexion?
-Lexion ist ein modernes Betriebssystem für politische Organisationen, Parteien und Vereine. Es ersetzt unübersichtliche WhatsApp-Gruppen, Excel-Listen und diverse Insel-Lösungen durch eine zentrale Plattform für Kommunikation, Planung und Datenverwaltung.
+### Was ist PulseDeck?
+PulseDeck ist ein modernes Betriebssystem für politische Organisationen, Parteien und Vereine. Es ersetzt unübersichtliche WhatsApp-Gruppen, Excel-Listen und diverse Insel-Lösungen durch eine zentrale Plattform für Kommunikation, Planung und Datenverwaltung.
 
 ### Für wen ist diese Dokumentation?
 *   **Mitglieder:** Lerne, wie du dich vernetzt, Termine zusagst und mitarbeitest.
@@ -18,7 +18,7 @@ Lexion ist ein modernes Betriebssystem für politische Organisationen, Parteien 
 ## 🚀 Erste Schritte
 
 ### 1. Anmeldung & Sicherheit
-Lexion nutzt moderne Sicherheitsstandards für den Schutz deiner Daten.
+PulseDeck nutzt moderne Sicherheitsstandards für den Schutz deiner Daten.
 
 *   **Login per Magic Link:** Gib deine E-Mail-Adresse ein. Du erhältst einen Einmal-Link per E-Mail, der dich sofort einloggt. Kein Passwort notwendig.
 *   **Login per Passwort:** Optional kannst du in deinen Einstellungen ein Passwort festlegen, falls du dich klassisch anmelden möchtest.
@@ -74,7 +74,7 @@ Der sichere Cloud-Speicher für Satzungen, Protokolle und Vorlagen.
 
 ### 👥 Mitglieder & Kontakte
 *   **Mitgliederliste:** Das interne "Telefonbuch". Suche nach Namen oder filtere nach Skills ("Wer kann Video-Schnitt?").
-*   **Kontakte:** Ein separates Adressbuch für externe Partner (Presse, Vermieter, Dienstleister). Diese Personen haben keinen Zugriff auf Lexion, aber ihre Daten sind für die Arbeit wichtig.
+*   **Kontakte:** Ein separates Adressbuch für externe Partner (Presse, Vermieter, Dienstleister). Diese Personen haben keinen Zugriff auf PulseDeck, aber ihre Daten sind für die Arbeit wichtig.
 
 ### 🤝 Arbeitsgruppen (AGs)
 AGs sind das Herz der inhaltlichen Arbeit.
@@ -142,4 +142,4 @@ Nutze den **Feedback-Button** in der linken Sidebar (unten). Beschreibe das Prob
 Bitte wende dich an einen Administrator deiner Organisation. Aus Datenschutzgründen werden deine Daten dann vollständig entfernt.
 
 ---
-*© 2026 Lexion – Dokumentation Version 1.2*
+*© 2026 PulseDeck – Dokumentation Version 1.2*

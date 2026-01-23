@@ -33,7 +33,7 @@ import { SupabaseService } from '../../shared/services/supabase';
                 <div class="text-center mb-8">
                     <h1 class="text-3xl font-bold text-[var(--color-text)] mb-2">Organisation erstellen</h1>
                     <p class="text-[var(--color-text-muted)]">
-                        Erstelle deine Organisation auf Lexion
+                        Erstelle deine Organisation auf PulseDeck
                     </p>
                 </div>
 
@@ -57,7 +57,7 @@ import { SupabaseService } from '../../shared/services/supabase';
                     <div class="space-y-2">
                         <label class="text-sm font-medium text-[var(--color-text)]">URL-Slug</label>
                         <div class="flex items-center gap-2">
-                            <span class="text-sm text-[var(--color-text-muted)]">lexion.de/</span>
+                            <span class="text-sm text-[var(--color-text-muted)]">pulsedeck.de/</span>
                             <input pInputText [(ngModel)]="slug" (blur)="checkSlug()"
                                 class="flex-1" placeholder="meine-organisation" />
                         </div>
