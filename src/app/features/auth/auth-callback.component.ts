@@ -175,8 +175,19 @@ export class AuthCallbackComponent implements OnInit {
         const type = hashParams.get('type');
 
         // Also check query params
-        const errorCode = this.route.snapshot.queryParams['error'];
-        const errorDescription = this.route.snapshot.queryParams['error_description'];
+        let errorCode = this.route.snapshot.queryParams['error'];
+        let errorDescription = this.route.snapshot.queryParams['error_description'];
+
+        // If not in query params, check hash params
+        if (!errorCode) {
+            errorCode = hashParams.get('error');
+            errorDescription = hashParams.get('error_description');
+
+            // Decode error description if present
+            if (errorDescription) {
+                errorDescription = decodeURIComponent(errorDescription.replace(/\+/g, ' '));
+            }
+        }
 
         if (errorCode) {
             this.processing.set(false);

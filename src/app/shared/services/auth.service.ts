@@ -218,11 +218,9 @@ export class AuthService {
                 body: JSON.stringify({
                     email: email.toLowerCase().trim(),
                     organizationId,
-                    // Only send redirectTo for localhost development,
-                    // otherwise let the Edge Function use the configured SITE_URL
-                    ...(window.location.hostname === 'localhost'
-                        ? { redirectTo: `${window.location.origin}/auth/callback` }
-                        : {}),
+                    // Explicitly set redirectTo to ensure we land on the callback page
+                    // This handles both localhost and production environments correctly
+                    redirectTo: `${window.location.origin}/auth/callback`,
                 }),
             });
 
