@@ -67,7 +67,7 @@ Deno.serve(async (req: Request) => {
                 name,
                 organization:organizations!inner(id, name, slug)
             `)
-            .eq("email", normalizedEmail);
+            .ilike("email", normalizedEmail);
 
         if (organizationId) {
             query = query.eq("organization_id", organizationId);
