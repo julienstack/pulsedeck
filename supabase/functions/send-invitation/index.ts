@@ -158,6 +158,16 @@ Deno.serve(async (req: Request) => {
 
             if (isConfirmed) {
                 console.log(`[send-invitation] User confirmed, connecting account`);
+                
+                // CRITICAL: Link the user to all unconnected member profiles
+                if (unconnectedMembers.length > 0) {
+                     const idsToLink = unconnectedMembers.map((m: MemberInfo) => m.id);
+                     await supabaseAdmin
+                        .from("members")
+                        .update({ user_id: existingUserId })
+                        .in("id", idsToLink);
+                }
+
                 return new Response(
                     JSON.stringify({
                         status: "connected",
@@ -172,7 +182,17 @@ Deno.serve(async (req: Request) => {
                 );
             }
             
-            console.log(`[send-invitation] User exists but unconfirmed. Proceeding to resend invite.`);
+            console.log(`[send-invitation] User exists but unconfirmed. Deleting and re-inviting to ensure fresh token.`);
+            
+            // Unlink members first
+            await supabaseAdmin.from("members").update({ user_id: null }).eq("user_id", existingUserId);
+            
+            // Delete the unconfirmed user
+            const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(existingUserId);
+            if (deleteError) {
+                 console.error("[send-invitation] Error deleting unconfirmed user:", deleteError);
+                 // Fallback: Proceed to normal invite, though it might fail if delete failed
+            }
         }
 
         // No auth user exists - send invitation
@@ -223,8 +243,6 @@ Deno.serve(async (req: Request) => {
             );
         }
 
-        // Do NOT link immediately
-        /*
         // Link the new auth user to all unconnected members
         if (inviteData?.user?.id) {
             console.log(`[send-invitation] Linking new user ${inviteData.user.id} to members`);
@@ -235,7 +253,6 @@ Deno.serve(async (req: Request) => {
                     .eq("id", member.id);
             }
         }
-        */
 
         console.log("[send-invitation] Invitation sent successfully");
         return new Response(

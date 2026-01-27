@@ -82,43 +82,71 @@ Deno.serve(async (req: Request) => {
             );
         }
 
-        // Check if user already exists with this email
-        const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
-        const existingUser = existingUsers?.users?.find(u => u.email === email);
+        // Check if user already exists
+        let existingUser;
 
-        if (existingUser && existingUser.email_confirmed_at) {
-            // User exists and is confirmed, send password reset email
-            const siteUrl = Deno.env.get("SITE_URL") || "https://pulsedeck.de";
-            const finalRedirectTo = redirectTo || `${siteUrl}/auth/callback`;
-
-            // Use the regular client method which actually sends the email
-            // Note: We create a new client without service role to use the regular auth methods
-            const supabaseClient = createClient(
-                Deno.env.get("SUPABASE_URL") ?? "",
-                Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-            );
-
-            const { error: resetError } = await supabaseClient.auth.resetPasswordForEmail(
-                email,
-                { redirectTo: finalRedirectTo }
-            );
-
-            if (resetError) {
-                console.error("Password reset error:", resetError);
-                return new Response(
-                    JSON.stringify({ error: resetError.message }),
-                    { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-                );
+        // 1. Check if member already has a user_id linked
+        if (targetMember.user_id) {
+            const { data: { user }, error: userError } = await supabaseAdmin.auth.admin.getUserById(targetMember.user_id);
+            if (!userError && user) {
+                existingUser = user;
             }
+        }
 
-            return new Response(
-                JSON.stringify({
-                    message: "Passwort-Reset E-Mail gesendet",
-                    type: "reset",
-                    userId: existingUser.id
-                }),
-                { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-            );
+        // 2. If not found by ID, search by email (with higher limit)
+        if (!existingUser) {
+            const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+            existingUser = existingUsers?.users?.find(u => u.email?.toLowerCase() === email.toLowerCase());
+        }
+
+        if (existingUser) {
+            if (existingUser.email_confirmed_at) {
+                // User exists and is confirmed, send password reset email
+                const siteUrl = Deno.env.get("SITE_URL") || "https://pulsedeck.de";
+                const finalRedirectTo = redirectTo || `${siteUrl}/auth/callback`;
+
+                // Use the regular client method which actually sends the email
+                // Note: We create a new client without service role to use the regular auth methods
+                const supabaseClient = createClient(
+                    Deno.env.get("SUPABASE_URL") ?? "",
+                    Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+                );
+
+                // CRITICAL: Link the user to the member record BEFORE sending the email
+                // This ensures that when they log in (via reset link), they are already connected
+                await supabaseAdmin
+                    .from("members")
+                    .update({ user_id: existingUser.id })
+                    .eq("id", memberId);
+
+                const { error: resetError } = await supabaseClient.auth.resetPasswordForEmail(
+                    email,
+                    { redirectTo: finalRedirectTo }
+                );
+
+                if (resetError) {
+                    console.error("Password reset error:", resetError);
+                    return new Response(
+                        JSON.stringify({ error: resetError.message }),
+                        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+                    );
+                }
+
+                return new Response(
+                    JSON.stringify({
+                        message: "Passwort-Reset E-Mail gesendet",
+                        type: "reset",
+                        userId: existingUser.id
+                    }),
+                    { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+                );
+            } else {
+                // User exists but unconfirmed. Delete and re-invite.
+                console.log(`[invite-member] User exists but unconfirmed. Deleting and re-inviting.`);
+                await supabaseAdmin.from("members").update({ user_id: null }).eq("user_id", existingUser.id);
+                await supabaseAdmin.auth.admin.deleteUser(existingUser.id);
+                // Proceed to invite logic below...
+            }
         }
 
         // Invite new user via email
@@ -142,15 +170,17 @@ Deno.serve(async (req: Request) => {
             );
         }
 
-        // Do NOT link immediately. Linking happens via Database Trigger on auth.users update/insert
-        /*
+
+
+        // Link the new auth user to all unconnected members IMMEDIATELY
+        // This is required because DB triggers might not unreliable or missing for this specific flow
         if (inviteData?.user?.id) {
+            // console.log(`[invite-member] Linking new user ${inviteData.user.id} to member ${memberId}`);
             await supabaseAdmin
                 .from("members")
                 .update({ user_id: inviteData.user.id })
                 .eq("id", memberId);
         }
-        */
 
         return new Response(
             JSON.stringify({
