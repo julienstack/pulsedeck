@@ -18,7 +18,8 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 ---
 
 ## 🚧 Aktuell in Arbeit
-*(Derzeit werden Features aus Phase 2 priorisiert)*
+*(Fokus: Aktivierung durch Smart Matching)*
+- **Smart Matching** (Dashboard-Integration)
 
 ---
 
@@ -41,14 +42,17 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 | 6 | **Teilnehmerlisten** | ✅ Fertig | "Wer kommt?" sichtbar machen (Social Proof) |
 | 7 | **Öffentliche Events** | ✅ Fertig | Shareable Links für WhatsApp (ohne Login lesbar) |
 | 8 | **Einfache Umfragen** | ✅ Fertig | Abstimmungen im Feed ("Terminfindung") |
+| 9 | **Push-Notifications** | 🏃 In Arbeit | Zielgruppen-Push (Basis & UI steht) |
+| 10 | **Smart Matching** | 🏃 In Arbeit | "Deine Skills werden gebraucht" Dashboard-Karte |
+| 11 | **Mikrotasks** | ⏳ Geplant | "5-Minuten-Hilfe" (Beitrag teilen, Umfrage) |
+| 12 | **Onboarding Quest** | ⏳ Geplant | Gamification-Balken für neue Mitglieder (Ausbau) |
 
 ### Phase 3: Profi-Features ⭐
 
 | # | Feature | Status | Beschreibung |
 |---|---------|--------|--------------|
-| 9 | **Push-Notifications** | ⏸️ Später | Native Mobile Notifications (technisch aufwendig) |
-| 10 | **Biete/Suche Brett** | ⏳ Geplant | Marktplatz für Hilfe/Ressourcen |
-| 11 | **Auto-Danke System** | ⏳ Geplant | Automatische Wertschätzung nach Events |
+| 13 | **Biete/Suche Brett** | ⏳ Geplant | Marktplatz für Hilfe/Ressourcen |
+| 14 | **Kudos System** | ⏳ Geplant | High-Fives & Wertschätzung statt nur Auto-Danke |
 
 ---
 
