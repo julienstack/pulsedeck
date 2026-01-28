@@ -9,8 +9,10 @@ import { EventsService } from '../../../shared/services/events.service';
 import { OnboardingService } from '../../../shared/services/onboarding.service';
 import { StatisticsService } from '../../../shared/services/statistics.service';
 import { OrganizationService } from '../../../shared/services/organization.service';
+import { SmartMatchingService } from '../../../shared/services/smart-matching.service';
 import { CalendarEvent, getEventType } from '../../../shared/models/calendar-event.model';
 import { WorkingGroup } from '../../../shared/models/working-group.model';
+
 
 @Component({
   selector: 'app-dashboard-home',
@@ -31,6 +33,7 @@ export class DashboardHome implements OnInit {
   onboardingService = inject(OnboardingService);
   statsService = inject(StatisticsService);
   orgService = inject(OrganizationService);
+  smartMatchingService = inject(SmartMatchingService);
 
   myWorkingGroups: WorkingGroup[] = [];
   myUpcomingEvents: CalendarEvent[] = [];
@@ -91,6 +94,7 @@ export class DashboardHome implements OnInit {
     if (member?.id) {
       await this.workingGroupsService.fetchMyMemberships(member.id);
       await this.onboardingService.fetchProgress();
+      await this.smartMatchingService.findMatchingOpportunities();
     }
   }
 

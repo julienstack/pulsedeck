@@ -14,6 +14,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { EventsService } from '../../../shared/services/events.service';
@@ -29,6 +30,8 @@ import {
 } from '../../../shared/services/event-registration.service';
 import { EventSlotService, EventSlot, CreateSlotData } from '../../../shared/services/event-slot.service';
 import { SupabaseService } from '../../../shared/services/supabase';
+import { SkillService, Skill } from '../../../shared/services/skill.service';
+import { OrganizationService } from '../../../shared/services/organization.service';
 
 @Component({
   selector: 'app-calendar',
@@ -50,6 +53,7 @@ import { SupabaseService } from '../../../shared/services/supabase';
     ToastModule,
     TooltipModule,
     InputNumberModule,
+    MultiSelectModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './calendar.html',
@@ -66,6 +70,8 @@ export class CalendarComponent implements OnInit, OnDestroy {
   readonly registrationService = inject(EventRegistrationService);
   readonly slotService = inject(EventSlotService);
   readonly workingGroupsService = inject(WorkingGroupsService);
+  readonly skillService = inject(SkillService);
+  readonly orgService = inject(OrganizationService);
   workingGroups = this.workingGroupsService.workingGroups;
 
   // Permission-based visibility
@@ -489,10 +495,17 @@ export class CalendarComponent implements OnInit, OnDestroy {
   slotsLoading = signal(false);
   newSlotTitle = signal('');
   newSlotMaxHelpers = signal(3);
+  newSlotSkills = signal<string[]>([]);
+  availableSkills = this.skillService.skills;
 
   async openManageSlots(event: CalendarEvent): Promise<void> {
-    this.currentEvent = JSON.parse(JSON.stringify(event)); // Deep copy to avoid reference issues
+    this.currentEvent = JSON.parse(JSON.stringify(event)); // Deep copy
     this.manageSlotsDialogVisible.set(true);
+    // Load skills for the org
+    const orgId = this.orgService.currentOrgId();
+    if (orgId) {
+      await this.skillService.loadSkills(orgId);
+    }
     if (event.id) {
       await this.slotService.loadSlots(event.id, this.auth.currentMember()?.id);
     }
@@ -518,6 +531,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
       organization_id: orgId,
       title: this.newSlotTitle(),
       max_helpers: this.newSlotMaxHelpers(),
+      required_skills: this.newSlotSkills(),
       sort_order: this.currentSlots().length
     };
 
@@ -527,6 +541,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
     // Reset form
     this.newSlotTitle.set('');
     this.newSlotMaxHelpers.set(3);
+    this.newSlotSkills.set([]);
     this.slotsLoading.set(false);
   }
 
@@ -558,5 +573,13 @@ export class CalendarComponent implements OnInit, OnDestroy {
     if (this.currentEvent.id) {
       await this.slotService.loadSlots(this.currentEvent.id, memberId);
     }
+  }
+
+  /**
+   * Get skill name by ID from loaded skills
+   */
+  getSkillName(skillId: string): string {
+    const skill = this.availableSkills().find((s) => s.id === skillId);
+    return skill?.name || skillId;
   }
 }

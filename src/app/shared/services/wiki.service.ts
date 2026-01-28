@@ -26,6 +26,8 @@ export class WikiService implements OnDestroy {
     async fetchDocs(orgId: string): Promise<void> {
         this._loading.set(true);
         this._error.set(null);
+        
+        console.log('DEBUG: WikiService.fetchDocs called for Org:', orgId);
 
         const { data, error } = await this.supabase
             .from(this.TABLE_NAME)
@@ -34,9 +36,10 @@ export class WikiService implements OnDestroy {
             .order('last_updated', { ascending: false });
 
         if (error) {
+            console.error('DEBUG: Error fetching wiki docs:', error);
             this._error.set(error.message);
-            console.error('Error fetching wiki docs:', error);
         } else {
+            console.log('DEBUG: Fetched wiki docs:', data?.length, data);
             this._docs.set(data ?? []);
         }
 

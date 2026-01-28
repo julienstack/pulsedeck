@@ -1,7 +1,7 @@
 # 🚀 PulseDeck Roadmap
 
-> **Letzte Aktualisierung:** 21. Januar 2026 (17:35)  
-> **Aktuelle Version:** Alpha 0.9.5
+> **Letzte Aktualisierung:** 28. Januar 2026  
+> **Aktuelle Version:** Alpha 0.9.6
 
 ---
 
@@ -18,8 +18,9 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 ---
 
 ## 🚧 Aktuell in Arbeit
-*(Fokus: Aktivierung durch Smart Matching)*
-- **Smart Matching** (Dashboard-Integration)
+*(Fokus: Push-Notifications & Mikrotasks)*
+- **Push-Notifications** (Zielgruppen-Push)
+- **Mikrotasks** (5-Minuten-Hilfe)
 
 ---
 
@@ -43,8 +44,8 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 | 7 | **Öffentliche Events** | ✅ Fertig | Shareable Links für WhatsApp (ohne Login lesbar) |
 | 8 | **Einfache Umfragen** | ✅ Fertig | Abstimmungen im Feed ("Terminfindung") |
 | 9 | **Push-Notifications** | 🏃 In Arbeit | Zielgruppen-Push (Basis & UI steht) |
-| 10 | **Smart Matching** | 🏃 In Arbeit | "Deine Skills werden gebraucht" Dashboard-Karte |
-| 11 | **Mikrotasks** | ⏳ Geplant | "5-Minuten-Hilfe" (Beitrag teilen, Umfrage) |
+| 10 | **Smart Matching** | ✅ Fertig | "Deine Skills werden gebraucht" Dashboard-Karte |
+| 11 | **Mikrotasks** | 🏃 In Arbeit | "5-Minuten-Hilfe" (Beitrag teilen, Umfrage) |
 | 12 | **Onboarding Quest** | ⏳ Geplant | Gamification-Balken für neue Mitglieder (Ausbau) |
 
 ### Phase 3: Profi-Features ⭐

@@ -35,7 +35,9 @@ export class EventDetailsComponent implements OnInit {
 
     async loadEvent(id: string) {
         try {
+            console.log('DEBUG: Loading event with ID:', id);
             const data = await this.eventsService.getEventById(id);
+            console.log('DEBUG: Event data loaded:', data);
             this.event.set(data);
 
             // Set Meta Tags for Social Sharing

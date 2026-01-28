@@ -181,9 +181,8 @@
             <!-- Article Content -->
             <div class="flex-1 overflow-y-auto p-4">
                 @if (selectedArticle()!.content) {
-                <div class="prose prose-invert prose-sm max-w-none">
-                    <div class="text-[var(--color-text)] whitespace-pre-wrap leading-relaxed">
-                        {{selectedArticle()!.content}}</div>
+                <div class="prose prose-invert prose-sm max-w-none wiki-content"
+                    [innerHTML]="renderMarkdown(selectedArticle()!.content)">
                 </div>
                 } @else {
                 <div class="text-[var(--color-text-muted)] italic text-sm">Kein Inhalt verfügbar.</div>

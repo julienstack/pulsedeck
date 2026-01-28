@@ -1,7 +1,7 @@
 # 🚀 PulseDeck Roadmap
 
-> **Letzte Aktualisierung:** 21. Januar 2026 (17:35)  
-> **Aktuelle Version:** Alpha 0.9.5
+> **Letzte Aktualisierung:** 28. Januar 2026  
+> **Aktuelle Version:** Alpha 0.9.6
 
 ---
 
@@ -18,8 +18,9 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 ---
 
 ## 🚧 Aktuell in Arbeit
-*(Fokus: Aktivierung durch Smart Matching)*
-- **Smart Matching** (Dashboard-Integration)
+*(Fokus: Push-Notifications & Mikrotasks)*
+- **Push-Notifications** (Zielgruppen-Push)
+- **Mikrotasks** (5-Minuten-Hilfe)
 
 ---
 
@@ -43,8 +44,8 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 | 7 | **Öffentliche Events** | ✅ Fertig | Shareable Links für WhatsApp (ohne Login lesbar) |
 | 8 | **Einfache Umfragen** | ✅ Fertig | Abstimmungen im Feed ("Terminfindung") |
 | 9 | **Push-Notifications** | 🏃 In Arbeit | Zielgruppen-Push (Basis & UI steht) |
-| 10 | **Smart Matching** | 🏃 In Arbeit | "Deine Skills werden gebraucht" Dashboard-Karte |
-| 11 | **Mikrotasks** | ⏳ Geplant | "5-Minuten-Hilfe" (Beitrag teilen, Umfrage) |
+| 10 | **Smart Matching** | ✅ Fertig | "Deine Skills werden gebraucht" Dashboard-Karte |
+| 11 | **Mikrotasks** | 🏃 In Arbeit | "5-Minuten-Hilfe" (Beitrag teilen, Umfrage) |
 | 12 | **Onboarding Quest** | ⏳ Geplant | Gamification-Balken für neue Mitglieder (Ausbau) |
 
 ### Phase 3: Profi-Features ⭐
@@ -68,7 +69,7 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 
 ### v0.9.5 – 21. Januar 2026 (Invite Flow Fixes)
 
-**� Einladungs-System**
+**📧 Einladungs-System**
 - [x] **Smart Invites:** Automatische Passwort-Reset-Einladung, falls Nutzerkonto bereits existiert (statt Fehler)
 - [x] **Localhost Support:** Einladungs-Links funktionieren jetzt auch lokal korrekt (Connection Refused Fix)
 - [x] **Auto-Link:** Mitglieder werden erst nach erfolgreicher E-Mail-Bestätigung mit ihrem Profil verknüpft (Phantom-Login Fix)
@@ -96,7 +97,7 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 
 ### v0.9.1 – 19. Januar 2026 (Security & UX Update)
 
-**� Kalender & Sicherheit**
+**🔒 Kalender & Sicherheit**
 - [x] **iCal Security:** Personalisierte Token für sichere Kalender-Abos (`?token=...`)
 - [x] **Sichtbarkeit:** Export enthält jetzt alle für den Nutzer sichtbaren Termine (auch interne & AG-Events)
 - [x] **UX:** Abgelaufene Termine von heute werden sofort ausgeblendet
@@ -106,7 +107,7 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 
 ### v0.9.0 Alpha – 19. Januar 2026
 
-**� Bugfixes & Stabilisierung**
+**🐛 Bugfixes & Stabilisierung**
 - [x] **Ansprechpartner:** Korrekte Trennung nach Organisation (Datenbank & Anzeige)
 - [x] **Dateien:** Ordner-Liste und Suche jetzt organisations-spezifisch
 - [x] **Termine-Sidebar:** Filtert nach Org & Auto-Refresh beim Wechsel
@@ -188,7 +189,7 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 
 ### v0.2.0 – 17. Januar 2026
 
-**� Berechtigungssystem**
+**🔐 Berechtigungssystem**
 - [x] Globale + AG-spezifische Rollen
 - [x] PermissionsService
 
@@ -201,7 +202,7 @@ Diese Roadmap zeigt dir, welche Features geplant sind, woran gerade gearbeitet w
 
 ---
 
-## �💡 Feature-Wünsche
+## 💡 Feature-Wünsche
 
 Hast du eine Idee? Nutze den **Feedback-Button** (Alpha-Badge) oder melde dich beim Entwickler-Team!
 

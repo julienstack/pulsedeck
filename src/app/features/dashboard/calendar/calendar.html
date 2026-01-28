@@ -288,16 +288,37 @@
         @if (canCreateEvent()) {
         <div class="bg-[var(--color-surface-raised)] p-4 rounded-lg border border-[var(--color-border)]">
             <h4 class="text-sm font-semibold mb-3">Neue Schicht erstellen</h4>
-            <div class="flex gap-2">
-                <input pInputText [(ngModel)]="newSlotTitle" placeholder="z.B. Aufbau" class="flex-1 p-inputtext-sm" />
+            <div class="space-y-3">
+                <div class="flex gap-2">
+                    <input pInputText [(ngModel)]="newSlotTitle" placeholder="z.B. Aufbau" class="flex-1 p-inputtext-sm" />
 
-                <!-- Simple Number Input -->
-                <input type="number" pInputText [(ngModel)]="newSlotMaxHelpers" min="1" max="25"
-                    class="w-20 text-center p-inputtext-sm font-semibold" pTooltip="Anzahl Helfer"
-                    tooltipPosition="top" />
+                    <!-- Simple Number Input -->
+                    <input type="number" pInputText [(ngModel)]="newSlotMaxHelpers" min="1" max="25"
+                        class="w-20 text-center p-inputtext-sm font-semibold" pTooltip="Anzahl Helfer"
+                        tooltipPosition="top" />
+                </div>
 
-                <p-button icon="pi pi-plus" (click)="createSlot()" [loading]="slotsLoading()"
-                    [disabled]="!newSlotTitle()" styleClass="p-button-sm"></p-button>
+                <!-- Skill Selection -->
+                @if (availableSkills().length > 0) {
+                <div>
+                    <label class="text-xs text-[var(--color-text-muted)] mb-1 block">Benötigte Skills (optional)</label>
+                    <p-multiselect 
+                        [(ngModel)]="newSlotSkills" 
+                        [options]="availableSkills()" 
+                        optionLabel="name" 
+                        optionValue="id"
+                        placeholder="Skills auswählen..."
+                        styleClass="w-full p-multiselect-sm"
+                        [showClear]="true"
+                        [filter]="true"
+                        filterPlaceholder="Suchen..."
+                        scrollHeight="150px">
+                    </p-multiselect>
+                </div>
+                }
+
+                <p-button icon="pi pi-plus" label="Schicht erstellen" (click)="createSlot()" [loading]="slotsLoading()"
+                    [disabled]="!newSlotTitle()" styleClass="p-button-sm w-full"></p-button>
             </div>
         </div>
         }
@@ -314,6 +335,16 @@
                             <i class="pi pi-clock mr-1"></i> {{ slot.start_time }} - {{ slot.end_time || 'Ende' }}
                             }
                         </p>
+                        <!-- Required Skills Tags -->
+                        @if (slot.required_skills && slot.required_skills.length > 0) {
+                        <div class="flex flex-wrap gap-1 mt-2">
+                            @for (skillId of slot.required_skills; track skillId) {
+                            <span class="text-[10px] px-1.5 py-0.5 bg-orange-500/20 text-orange-600 dark:text-orange-400 rounded">
+                                {{ getSkillName(skillId) }}
+                            </span>
+                            }
+                        </div>
+                        }
                     </div>
 
                     @if (canCreateEvent()) {

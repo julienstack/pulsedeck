@@ -76,8 +76,81 @@
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
 
-        <!-- Left Column: My AGs + My Events -->
+        <!-- Left Column: Smart Matching + My AGs + My Events -->
         <div class="lg:col-span-2 space-y-4 md:space-y-6">
+
+            <!-- Smart Matching Card -->
+            @if (auth.isLoggedIn() && smartMatchingService.opportunities().length > 0) {
+            <div class="bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-transparent rounded-xl border border-orange-500/20 p-4 md:p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="p-2 bg-orange-500/20 rounded-lg">
+                            <i class="pi pi-bolt text-orange-500"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-[var(--color-text)]">Helfer gesucht!</h3>
+                            <p class="text-xs text-[var(--color-text-muted)]">Offene Schichten für dich</p>
+                        </div>
+                    </div>
+                    @if (smartMatchingService.loading()) {
+                    <i class="pi pi-spin pi-spinner text-orange-500"></i>
+                    }
+                </div>
+
+                <!-- Open slots -->
+                <div class="space-y-2">
+                    @for (opp of smartMatchingService.opportunities(); track opp.slot_id) {
+                    <a [routerLink]="['calendar']" [queryParams]="{event: opp.event_id}"
+                        class="flex items-start gap-3 p-3 rounded-lg border transition-colors group"
+                        [class.bg-orange-500/5]="opp.has_skill_match"
+                        [class.border-orange-500/30]="opp.has_skill_match"
+                        [class.bg-\[var\(--color-surface-overlay\)\]]="!opp.has_skill_match"
+                        [class.border-\[var\(--color-border\)\]]="!opp.has_skill_match"
+                        [class.hover\:border-orange-500\/30]="true">
+
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                            [class.bg-orange-500/30]="opp.has_skill_match"
+                            [class.bg-orange-500/20]="!opp.has_skill_match">
+                            @if (opp.has_skill_match) {
+                            <i class="pi pi-star-fill text-orange-500"></i>
+                            } @else {
+                            <i class="pi pi-calendar-plus text-orange-500"></i>
+                            }
+                        </div>
+
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="font-medium text-[var(--color-text)] text-sm group-hover:text-orange-500 truncate">
+                                    {{ opp.slot_title }}
+                                </span>
+                                @if (opp.has_skill_match) {
+                                <span class="text-[10px] px-1.5 py-0.5 bg-orange-500 text-white rounded font-medium whitespace-nowrap">
+                                    Skill-Match!
+                                </span>
+                                }
+                            </div>
+
+                            <div class="text-xs text-[var(--color-text-muted)] mb-1">
+                                {{ opp.event_title }} • {{ opp.remaining_spots }} {{ opp.remaining_spots === 1 ? 'Platz' : 'Plätze' }} frei
+                            </div>
+
+                            @if (opp.matching_skills.length > 0) {
+                            <div class="flex flex-wrap gap-1">
+                                @for (skill of opp.matching_skills; track skill) {
+                                <span class="text-[10px] px-1.5 py-0.5 bg-orange-500/20 text-orange-600 dark:text-orange-400 rounded">
+                                    {{ skill }}
+                                </span>
+                                }
+                            </div>
+                            }
+                        </div>
+
+                        <i class="pi pi-chevron-right text-xs text-[var(--color-text-muted)] group-hover:text-orange-500 mt-3"></i>
+                    </a>
+                    }
+                </div>
+            </div>
+            }
 
             <!-- My Working Groups -->
             @if (auth.isLoggedIn()) {

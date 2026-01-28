@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TagModule } from 'primeng/tag';
@@ -13,11 +13,13 @@ import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { WikiService } from '../../../shared/services/wiki.service';
+import { OrganizationService } from '../../../shared/services/organization.service';
 import { WikiDoc } from '../../../shared/models/wiki-doc.model';
 import { AuthService } from '../../../shared/services/auth.service';
 import { PermissionsService } from '../../../shared/services/permissions.service';
 import { OnboardingService } from '../../../shared/services/onboarding.service';
 import { WorkingGroupsService } from '../../../shared/services/working-groups.service';
+import { marked } from 'marked';
 
 @Component({
   selector: 'app-wiki',
@@ -48,6 +50,7 @@ export class WikiComponent implements OnInit {
   public auth = inject(AuthService);
   public permissions = inject(PermissionsService);
   public wgService = inject(WorkingGroupsService);
+  private orgService = inject(OrganizationService);
 
   // Permission-based visibility
   canEdit = this.permissions.canEditWiki;
@@ -129,18 +132,24 @@ export class WikiComponent implements OnInit {
     return docs;
   });
 
+  constructor() {
+    effect(() => {
+      const orgId = this.orgService.currentOrgId();
+      if (orgId) {
+        this.wikiService.fetchDocs(orgId);
+        this.wgService.fetchWorkingGroups();
+      }
+    });
+
+    effect(() => {
+      const member = this.auth.currentMember();
+      if (member?.id) {
+        this.wgService.fetchMyMemberships(member.id);
+      }
+    });
+  }
+
   ngOnInit(): void {
-    const orgId = this.auth.currentOrgId();
-    if (orgId) {
-      this.wikiService.fetchDocs(orgId);
-      this.wgService.fetchWorkingGroups();
-    }
-
-    const member = this.auth.currentMember();
-    if (member?.id) {
-      this.wgService.fetchMyMemberships(member.id);
-    }
-
     // Track wiki visit for onboarding
     this.onboardingService.trackWikiVisit();
   }
@@ -416,5 +425,13 @@ export class WikiComponent implements OnInit {
       default:
         return ['public', 'member', 'committee', 'admin'];
     }
+  }
+
+  /**
+   * Render markdown content to HTML
+   */
+  renderMarkdown(content: string | null | undefined): string {
+    if (!content) return '';
+    return marked.parse(content, { async: false }) as string;
   }
 }

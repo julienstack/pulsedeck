@@ -96,3 +96,138 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+/* Wiki Markdown Content Styling */
+.wiki-content {
+    color: var(--color-text);
+    line-height: 1.7;
+}
+
+.wiki-content h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 1.5rem 0 1rem 0;
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0.5rem;
+}
+
+.wiki-content h2 {
+    font-size: 1.35rem;
+    font-weight: 600;
+    margin: 1.25rem 0 0.75rem 0;
+    color: var(--color-text);
+}
+
+.wiki-content h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 1rem 0 0.5rem 0;
+    color: var(--color-text);
+}
+
+.wiki-content p {
+    margin: 0.75rem 0;
+}
+
+.wiki-content ul,
+.wiki-content ol {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
+}
+
+.wiki-content li {
+    margin: 0.35rem 0;
+}
+
+.wiki-content ul li {
+    list-style-type: disc;
+}
+
+.wiki-content ol li {
+    list-style-type: decimal;
+}
+
+.wiki-content strong {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.wiki-content em {
+    font-style: italic;
+}
+
+.wiki-content a {
+    color: #e53935;
+    text-decoration: none;
+}
+
+.wiki-content a:hover {
+    text-decoration: underline;
+}
+
+.wiki-content blockquote {
+    border-left: 3px solid #e53935;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    color: var(--color-text-muted);
+    background: rgba(229, 57, 53, 0.05);
+    padding: 0.75rem 1rem;
+    border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.wiki-content code {
+    background: rgba(75, 85, 99, 0.3);
+    padding: 0.15rem 0.4rem;
+    border-radius: 0.25rem;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.85em;
+}
+
+.wiki-content pre {
+    background: rgba(17, 24, 39, 0.8);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+    border: 1px solid var(--color-border);
+}
+
+.wiki-content pre code {
+    background: none;
+    padding: 0;
+    font-size: 0.875rem;
+}
+
+.wiki-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.wiki-content th,
+.wiki-content td {
+    border: 1px solid var(--color-border);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+}
+
+.wiki-content th {
+    background: rgba(75, 85, 99, 0.2);
+    font-weight: 600;
+}
+
+.wiki-content tr:nth-child(even) {
+    background: rgba(75, 85, 99, 0.1);
+}
+
+.wiki-content hr {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 1.5rem 0;
+}
+
+/* Checkbox lists (task lists) */
+.wiki-content input[type="checkbox"] {
+    margin-right: 0.5rem;
+}
