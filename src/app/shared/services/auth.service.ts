@@ -214,7 +214,6 @@ export class AuthService {
                 headers: {
                     'Content-Type': 'application/json',
                     'apikey': environment.supabase.anonKey,
-                    'Authorization': `Bearer ${environment.supabase.anonKey}`,
                 },
                 body: JSON.stringify({
                     email: email.toLowerCase().trim(),
@@ -228,7 +227,11 @@ export class AuthService {
             const result = await response.json();
 
             if (!response.ok) {
-                return { status: 'not_found', error: result.error };
+                console.error('Edge Function Error:', result);
+                return { 
+                    status: 'error', 
+                    error: result.error || result.message || `Anfrage fehlgeschlagen (${response.status})` 
+                };
             }
 
             return result as LoginCheckResult;
