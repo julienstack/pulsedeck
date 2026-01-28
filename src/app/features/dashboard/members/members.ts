@@ -199,6 +199,14 @@ export class MembersComponent implements OnInit {
       }
     });
 
+    // Reload members when Organization changes
+    effect(() => {
+      const org = this.orgService.currentOrganization();
+      if (org?.id) {
+        this.membersService.fetchMembers();
+      }
+    });
+
     // Reload mappings when Organization OR Members change
     effect(() => {
       const org = this.orgService.currentOrganization();
@@ -211,7 +219,7 @@ export class MembersComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.membersService.fetchMembers();
+    // Initial fetch is now handled by the effect in constructor
   }
 
   /**
