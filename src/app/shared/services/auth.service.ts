@@ -1,6 +1,7 @@
 import { Injectable, computed, inject, signal, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { SupabaseService } from './supabase';
+import { OrganizationService } from './organization.service';
 import { Member, AppRole } from '../models/member.model';
 import { environment } from '../../../environments/environment';
 
@@ -37,6 +38,7 @@ export interface LoginCheckResult {
 export class AuthService {
     private supabase = inject(SupabaseService);
     private router = inject(Router);
+    private orgService = inject(OrganizationService);
     private readonly FUNCTIONS_URL = `${environment.supabase.url}/functions/v1`;
 
     /** All memberships for the current logged-in user */
@@ -116,12 +118,27 @@ export class AuthService {
             this.userMemberships.set(memberships);
             console.log('User memberships loaded:', memberships);
 
-            // If we have a stored org preference, use it
-            const storedOrgId = localStorage.getItem('last_org_id');
-            const matchingMembership = memberships.find(m => m.organizationId === storedOrgId);
+            // Priority 1: Check if OrganizationService already has an org loaded
+            // (e.g., from organizationGuard)
+            const guardOrgId = this.orgService.currentOrgId();
+            const guardMembership = guardOrgId
+                ? memberships.find(m => m.organizationId === guardOrgId)
+                : null;
 
-            if (matchingMembership) {
-                await this.setActiveOrganization(matchingMembership.organizationId);
+            if (guardMembership) {
+                console.log('Using organization from guard:', guardOrgId);
+                await this.setActiveOrganization(guardMembership.organizationId);
+                return;
+            }
+
+            // Priority 2: Check localStorage for stored preference
+            const storedOrgId = localStorage.getItem('last_org_id');
+            const storedMembership = storedOrgId
+                ? memberships.find(m => m.organizationId === storedOrgId)
+                : null;
+
+            if (storedMembership) {
+                await this.setActiveOrganization(storedMembership.organizationId);
             } else if (memberships.length === 1) {
                 // Only one org - auto-select
                 await this.setActiveOrganization(memberships[0].organizationId);
@@ -167,7 +184,26 @@ export class AuthService {
 
             this.userMemberships.set(memberships);
 
-            if (memberships.length === 1) {
+            // Priority 1: Check if OrganizationService already has org loaded
+            const guardOrgId = this.orgService.currentOrgId();
+            const guardMembership = guardOrgId
+                ? memberships.find(m => m.organizationId === guardOrgId)
+                : null;
+
+            if (guardMembership) {
+                await this.setActiveOrganization(guardMembership.organizationId);
+                return;
+            }
+
+            // Priority 2: Check localStorage
+            const storedOrgId = localStorage.getItem('last_org_id');
+            const storedMembership = storedOrgId
+                ? memberships.find(m => m.organizationId === storedOrgId)
+                : null;
+
+            if (storedMembership) {
+                await this.setActiveOrganization(storedMembership.organizationId);
+            } else if (memberships.length === 1) {
                 await this.setActiveOrganization(memberships[0].organizationId);
             }
         }
